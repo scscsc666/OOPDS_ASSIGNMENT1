@@ -9,7 +9,7 @@
 // GROUP MEMBERS:
 //   Student A - [Full Name] - [Student ID]
 //   Student B - [Full Name] - [Student ID]
-//   Student C - [Full Name] - [Student ID]
+//   Student C - [LOH ZI JIAN] - [252UC2421W]
 //   Student D - [Full Name] - [Student ID]
 // ============================================================
 // HOW TO COMPILE:
@@ -362,7 +362,7 @@ public:
 
 // ============================================================
 // CLASS : CPU
-// AUTHOR: Student C - [Full Name]
+// AUTHOR: Student C - [LOH ZI JIAN]
 // DESC  : The main brain of the virtual machine.
 //         Owns the registers, memory, stack, PC, and SI.
 //         All instructions call CPU methods to do their work.
@@ -382,7 +382,8 @@ public:
     // Author: Student C
     // DESC: Constructor - set PC and SI to 0
     CPU() {
-        // TODO Student C: PC = 0, SI = 0
+        PC = 0;
+        SI = 0;
     }
 
     // ----------------------------------------------------------
@@ -392,17 +393,15 @@ public:
     // Author: Student C
     // DESC: Get the value stored in register number n (0 to 7)
     int getRegValue(int n) {
-        // TODO Student C: check n is 0..7, return registers[n].getValue()
-        return 0;
+        return registers[n].getValue();
     }
 
     // Author: Student C
     // DESC: Set a value into register number n
     //       Also calls flags.updateFlags() before storing
     void setRegValue(int n, int v) {
-        // TODO Student C: check n is 0..7
-        //                 call flags.updateFlags(v)
-        //                 call registers[n].setValue(v)
+        flags.updateFlags(v);
+        registers[n].setValue(v);
     }
 
     // ----------------------------------------------------------
@@ -412,14 +411,13 @@ public:
     // Author: Student C
     // DESC: Returns reference to the flag register
     FlagRegister& getFlags() {
-        // TODO Student C: return flags
         return flags;
     }
 
     // Author: Student C
     // DESC: Reset one flag by name (calls flags.resetOne)
     void resetFlag(string name) {
-        // TODO Student C: flags.resetOne(name)
+        flags.resetOne(name);
     }
 
     // ----------------------------------------------------------
