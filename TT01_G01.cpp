@@ -8,7 +8,7 @@
 // ============================================================
 // GROUP MEMBERS:
 //   Student A - [Full Name] - [Student ID]
-//   Student B - [Full Name] - [Student ID]
+//   Student B - [YIP YU ZHE] - [252UC242YP]
 //   Student C - [LOH ZI JIAN] - [252UC2421W]
 //   Student D - [Full Name] - [Student ID]
 // ============================================================
@@ -188,97 +188,127 @@ public:
 
 // ============================================================
 // CLASS : Register
-// AUTHOR: Student B - [Full Name]
+// AUTHOR: Student B - [YIP YU ZHE]
 // DESC  : Base class for all register types.
 //         Holds one integer value.
 //         GeneralRegister inherits from this class.
 // ============================================================
 class Register {
 protected:
-    // TODO Student B: declare protected int value
+    int value; 
 
 public:
     // Author: Student B
     // DESC: Constructor - set value to 0
     Register() {
-        // TODO Student B: value = 0
+        value = 0;
     }
 
     // Author: Student B
     // DESC: Returns the current value stored in this register
     int getValue() {
-        // TODO Student B: return value
-        return 0;
+        return value;
     }
 
     // Author: Student B
     // DESC: Resets register value back to 0
     void reset() {
-        // TODO Student B: value = 0
+        value = 0;
     }
 
     // Author: Student B
     // DESC: Sets the value (virtual so child class can override)
     virtual void setValue(int v) {
-        // TODO Student B: value = v
+        value = v;
     }
 };
 
 
 // ============================================================
 // CLASS : GeneralRegister
-// AUTHOR: Student B - [Full Name]
+// AUTHOR: Student B - [YIP YU ZHE]
 // DESC  : Represents registers R0 to R7.
 //         Inherits from Register.
 //         Keeps value clamped between -128 and 127.
 // ============================================================
-class GeneralRegister : public Register {
-public:
+class GeneralRegister : public Register{
+public:    
     // Author: Student B
     // DESC: Sets the value but clamps it to -128..127 range
     //       Overrides the parent Register's setValue
     void setValue(int v) override {
-        // TODO Student B: if v > 127, set v = 127
-        //                 if v < -128, set v = -128
-        //                 then value = v
+        if (v > 127) v = 127;
+        if (v < -128) v = -128;
+        value = v;
     }
 };
 
 
 // ============================================================
 // CLASS : FlagRegister
-// AUTHOR: Student B - [Full Name]
+// AUTHOR: Student B - [YIP YU ZHE]
 // DESC  : Stores the 4 flag bits: OF, UF, CF, ZF
 //         Each flag is 0 (off) or 1 (on).
 //         Flags are updated after every arithmetic operation.
 // ============================================================
 class FlagRegister {
 private:
-    // TODO Student B: declare 4 int variables: OF, UF, CF, ZF
+   int OF;
+   int UF;
+   int CF;
+   int ZF;
 
 public:
     // Author: Student B
     // DESC: Constructor - set all flags to 0
     FlagRegister() {
-        // TODO Student B: OF=0, UF=0, CF=0, ZF=0
+        OF = 0;
+        UF = 0;
+        CF = 0;
+        ZF = 0;
     }
 
     // Author: Student B - Getters for each flag
-    int getOF() { /* TODO: return OF */ return 0; }
-    int getUF() { /* TODO: return UF */ return 0; }
-    int getCF() { /* TODO: return CF */ return 0; }
-    int getZF() { /* TODO: return ZF */ return 0; }
+    int getOF(){
+        return OF;
+    }
+
+    int getUF(){
+        return UF;
+    }
+
+    int getCF(){
+        return CF;
+    }
+
+    int getZF(){
+        return ZF;
+    }
 
     // Author: Student B - Setters for each flag
-    void setOF(int v) { /* TODO: OF = v */ }
-    void setUF(int v) { /* TODO: UF = v */ }
-    void setCF(int v) { /* TODO: CF = v */ }
-    void setZF(int v) { /* TODO: ZF = v */ }
+    void setOF(int v){
+        OF = v;
+    }
+
+    void setUF(int v){
+        UF = v;
+    }
+
+    void setCF(int v){
+        CF = v;
+    }
+
+    void setZF(int v){
+        ZF = v;
+    }
 
     // Author: Student B
     // DESC: Set all flags back to 0
-    void resetAll() {
-        // TODO Student B: OF=0, UF=0, CF=0, ZF=0
+    void resetAll(){
+        OF = 0;
+        UF = 0;
+        CF = 0;
+        ZF = 0;
     }
 
     // Author: Student B
@@ -289,15 +319,47 @@ public:
     //       ZF = 1 if result == 0
     //       CF = 1 if result > 255 or result < -255
     void updateFlags(int result) {
-        // TODO Student B: check each condition and set flags
+        // Overflow: result is too big for a signed byte
+        if (result > 127)
+            OF = 1;
+        else
+            OF = 0;
+ 
+        // Underflow: result is too small for a signed byte
+        if (result < -128)
+            UF = 1;
+        else
+            UF = 0;
+ 
+        // Zero: result is exactly zero
+        if (result == 0)
+            ZF = 1;
+        else
+            ZF = 0;
+ 
+        // Carry: result is completely outside 8-bit range
+        if (result > 255 || result < -255)
+            CF = 1;
+        else
+            CF = 0;
     }
 
     // Author: Student B
     // DESC: Reset one specific flag to 0 by its name
     //       Valid names: "OF", "UF", "CF", "ZF"
     void resetOne(string name) {
-        // TODO Student B: if name == "OF" then OF=0, etc.
-        // if name is unknown, print error and exit
+        if (name == "OF") {
+            OF = 0;
+        } else if (name == "UF") {
+            UF = 0;
+        } else if (name == "CF") {
+            CF = 0;
+        } else if (name == "ZF") {
+            ZF = 0;
+        } else {
+            cout << "ERROR: Unknown flag name: " << name << endl;
+            exit(1);
+        }
     }
 };
 
@@ -309,48 +371,60 @@ public:
 
 // ============================================================
 // CLASS : Memory
-// AUTHOR: Student B - [Full Name]
+// AUTHOR: Student B - [YIP YU ZHE]
 // DESC  : 64 slots of storage, addressed from 0 to 63.
 //         Each slot holds one integer value.
 //         Only LOAD and STORE instructions can access memory.
 // ============================================================
 class Memory {
 private:
-    // TODO Student B: declare int mem[64]
+    int mem[64];   // 64 memory slots, each holds one number
 
 public:
     // Author: Student B
     // DESC: Constructor - fill all 64 slots with 0
     Memory() {
-        // TODO Student B: loop and set mem[i] = 0
+        for (int i = 0; i < 64; i++) {
+            mem[i] = 0;
+        }
     }
 
     // Author: Student B
     // DESC: Read and return value at given memory address
     //       Print error and exit if address is not 0..63
     int read(int address) {
-        // TODO Student B: check bounds, then return mem[address]
-        return 0;
+        if (address < 0 || address > 63) {
+            cout << "ERROR: Memory address " << address
+                 << " is out of range. Must be 0 to 63." << endl;
+            exit(1);
+        }
+        return mem[address];
     }
 
     // Author: Student B
     // DESC: Write a value to a given memory address
     //       Print error and exit if address is not 0..63
     void write(int address, int value) {
-        // TODO Student B: check bounds, then mem[address] = value
+        if (address < 0 || address > 63) {
+            cout << "ERROR: Memory address " << address
+                 << " is out of range. Must be 0 to 63." << endl;
+            exit(1);
+        }
+        mem[address] = value;
     }
 
     // Author: Student B
     // DESC: Returns the raw memory array (used for output display)
     int* getRaw() {
-        // TODO Student B: return mem
-        return nullptr;
+        return mem;
     }
 
     // Author: Student B
     // DESC: Clear all memory slots back to 0
     void reset() {
-        // TODO Student B: loop and set mem[i] = 0
+        for (int i = 0; i < 64; i++) {
+            mem[i] = 0;
+        }
     }
 };
 
