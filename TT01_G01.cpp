@@ -31,12 +31,12 @@ using namespace std;
 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // SECTION 1 : CUSTOM DATA STRUCTURES
-// ASSIGNED TO : Student A
+// ASSIGNED TO : Student B
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 // ============================================================
 // CLASS : MyVector
-// AUTHOR: Student A - [Full Name]
+// AUTHOR: Student B - [Full Name]
 // DESC  : A simple fixed array that stores up to 256 strings.
 //         Used to store lines read from the .asm file.
 //         Replaces std::vector (no STL allowed).
