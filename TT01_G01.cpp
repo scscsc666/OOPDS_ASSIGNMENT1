@@ -29,162 +29,191 @@
 using namespace std;
 
 
-// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+// ============================================================
 // SECTION 1 : CUSTOM DATA STRUCTURES
 // ASSIGNED TO : Student B
-// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+// ============================================================
 
 // ============================================================
 // CLASS : MyVector
-// AUTHOR: Student B - [Full Name]
+// AUTHOR: Student B - YIP YU ZHE
 // DESC  : A simple fixed array that stores up to 256 strings.
 //         Used to store lines read from the .asm file.
 //         Replaces std::vector (no STL allowed).
 // ============================================================
+template <typename T>
 class MyVector {
 private:
-    // TODO Student A: declare your private variables here
-    // Hint: you need a string array and an int for size
+    T   data[256];
+    int size;
 
 public:
-    // Author: Student A
+    // Author: Student B
     // DESC: Constructor - set size to 0
     MyVector() {
-        // TODO Student A: set size = 0
+        size = 0;
     }
 
-    // Author: Student A
-    // DESC: Add a new string item to the end of the array
-    void push_back(string item) {
-        // TODO Student A: store item, increase size
-        // if size >= 256, print error and exit
+    // Author: Student B
+    // DESC: Add a new item to the end of the array
+    void push_back(T item) {
+        if (size >= 256) {
+            cout << "ERROR: Too many instructions (max 256)." << endl;
+            exit(1);
+        }
+        data[size] = item;
+        size++;
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Get the item at a given index position
-    string get(int index) {
-        // TODO Student A: return data[index]
-        // if index is out of range, print error and exit
-        return "";
+    T get(int index) {
+        if (index < 0 || index >= size) {
+            cout << "ERROR: Index out of range." << endl;
+            exit(1);
+        }
+        return data[index];
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Returns how many items are stored
     int getSize() {
-        // TODO Student A: return size
-        return 0;
+        return size;
     }
 
-    // Author: Student A
-    // DESC: Remove all items (reset size to 0)
+    // Author: Student B
+    // DESC: Remove all items
     void clear() {
-        // TODO Student A: size = 0
+        size = 0;
     }
 };
 
 
 // ============================================================
 // CLASS : MyStack
-// AUTHOR: Student A - [Full Name]
+// AUTHOR: Student B - YIP YU ZHE
 // DESC  : A simple Last-In-First-Out stack with max 8 slots.
 //         Used for PUSH and POP instructions in the VM.
 //         Replaces std::stack (no STL allowed).
 // ============================================================
+template <typename T>
 class MyStack {
 private:
-    // TODO Student A: declare your private variables here
-    // Hint: you need an int array[8] and an int for top index
+    T   data[8];
+    int top;
 
 public:
-    // Author: Student A
-    // DESC: Constructor - set top to -1 (empty)
+    // Author: Student B
+    // DESC: Constructor - set top to -1 meaning empty
     MyStack() {
-        // TODO Student A: top = -1
+        top = -1;
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Push a value onto the top of the stack
-    //       Print error and exit if stack is already full (8 items)
-    void push(int value) {
-        // TODO Student A: check if full, then add value
+    //       Print error and exit if stack is already full
+    void push(T value) {
+        if (top >= 7) {
+            cout << "ERROR: Stack is full. Cannot push." << endl;
+            exit(1);
+        }
+        top++;
+        data[top] = value;
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Remove and return the top value from the stack
     //       Print error and exit if stack is empty
-    int pop() {
-        // TODO Student A: check if empty, then return top value
-        return 0;
+    T pop() {
+        if (top < 0) {
+            cout << "ERROR: Stack is empty. Program crashed." << endl;
+            exit(1);
+        }
+        T value = data[top];
+        top--;
+        return value;
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Returns true if the stack has no items
     bool isEmpty() {
-        // TODO Student A: return top < 0
-        return true;
+        return top < 0;
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Returns how many items are in the stack
     int getSize() {
-        // TODO Student A: return top + 1
-        return 0;
+        return top + 1;
     }
 };
 
 
 // ============================================================
 // CLASS : MyQueue
-// AUTHOR: Student A - [Full Name]
+// AUTHOR: Student B - YIP YU ZHE
 // DESC  : A simple First-In-First-Out queue with max 256 slots.
-//         Used as an alternative way to store program instructions.
+//         Used as an alternative way to store the program.
 //         Replaces std::queue (no STL allowed).
 // ============================================================
+template <typename T>
 class MyQueue {
 private:
-    // TODO Student A: declare your private variables here
-    // Hint: string array[256], int front, int rear, int size
+    T   data[256];
+    int front;
+    int rear;
+    int size;
 
 public:
-    // Author: Student A
+    // Author: Student B
     // DESC: Constructor - set front, rear, size all to 0
     MyQueue() {
-        // TODO Student A: front=0, rear=0, size=0
+        front = 0;
+        rear  = 0;
+        size  = 0;
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Add an item to the back of the queue
-    void enqueue(string item) {
-        // TODO Student A: add item at rear, move rear forward
+    void enqueue(T item) {
+        if (size >= 256) {
+            cout << "ERROR: Queue is full." << endl;
+            exit(1);
+        }
+        data[rear] = item;
+        rear = (rear + 1) % 256;
+        size++;
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Remove and return item from the front of the queue
-    string dequeue() {
-        // TODO Student A: return item at front, move front forward
-        return "";
+    T dequeue() {
+        if (size == 0) {
+            cout << "ERROR: Queue is empty." << endl;
+            exit(1);
+        }
+        T item = data[front];
+        front = (front + 1) % 256;
+        size--;
+        return item;
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Returns true if queue has no items
     bool isEmpty() {
-        // TODO Student A: return size == 0
-        return true;
+        return size == 0;
     }
 
-    // Author: Student A
+    // Author: Student B
     // DESC: Returns how many items are in the queue
     int getSize() {
-        // TODO Student A: return size
-        return 0;
+        return size;
     }
 };
 
-
-// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+// ============================================================
 // SECTION 2 : REGISTER CLASSES
 // ASSIGNED TO : Student B
-// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+// ============================================================
 
 // ============================================================
 // CLASS : Register
@@ -233,7 +262,7 @@ public:
 // ============================================================
 class GeneralRegister : public Register{
 public:    
-    // Author: Student B
+    // Author: Student B    
     // DESC: Sets the value but clamps it to -128..127 range
     //       Overrides the parent Register's setValue
     void setValue(int v) override {
@@ -259,7 +288,7 @@ private:
    int ZF;
 
 public:
-    // Author: Student B
+    // Author: Student B    
     // DESC: Constructor - set all flags to 0
     FlagRegister() {
         OF = 0;
@@ -268,7 +297,7 @@ public:
         ZF = 0;
     }
 
-    // Author: Student B - Getters for each flag
+    // Getters for each flag
     int getOF(){
         return OF;
     }
@@ -285,7 +314,7 @@ public:
         return ZF;
     }
 
-    // Author: Student B - Setters for each flag
+    // Setters for each flag
     void setOF(int v){
         OF = v;
     }
@@ -364,10 +393,10 @@ public:
 };
 
 
-// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+// ============================================================
 // SECTION 3 : MEMORY CLASS
 // ASSIGNED TO : Student B
-// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+// ============================================================
 
 // ============================================================
 // CLASS : Memory
