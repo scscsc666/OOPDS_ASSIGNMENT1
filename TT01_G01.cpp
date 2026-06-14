@@ -1482,16 +1482,20 @@ public:
 // Author: Student A
 // DESC: Remove spaces and tabs from the start and end of a string
 string trim(string s) {
-    // TODO Student A: loop from start removing spaces/tabs
-    //                 loop from end removing spaces/tabs
-    //                 return the middle part
-    return s;
+    if (s.empty()) return s; 
+    int start = 0;
+    int end = (int)s.size() - 1;
+    while (start <= end && (s[start] == ' ' || s[start] == '\t')) start++;
+    while (end >= start && (s[end] == ' ' || s[end] == '\t')) end--;
+    return s.substr(start, end - start + 1);
 }
 
 // Author: Student A
 // DESC: Convert all letters in a string to UPPERCASE
 string toUpper(string s) {
-    // TODO Student A: loop through each character, call toupper()
+    for (int i = 0; i < (int)s.size(); i++)
+        s[i] = toupper(s[i]); 
+        // TODO Student A: loop through each character, call toupper()
     return s;
 }
 
@@ -1499,50 +1503,68 @@ string toUpper(string s) {
 // DESC: Remove anything after a semicolon (those are comments)
 // Example: "MOV R0, 5 ; this is a comment" → "MOV R0, 5 "
 string removeComment(string s) {
-    // TODO Student A: find ';', return everything before it
+    int pos = s.find(';');
+    if (pos != (int)string::npos)
+        return s.substr(0, pos); 
+        // TODO Student A: find ';', return everything before it
     return s;
 }
 
 // Author: Student A
 // DESC: Check if a string is a register name like R0, R1 .. R7
 bool isReg(string s) {
+    return s.size() == 2 && s[0] == 'R' && isdigit(s[1]);
     // TODO Student A: check s[0]=='R' and s[1] is a digit
-    return false;
+
 }
 
 // Author: Student A
 // DESC: Check if a string is an indirect register like [R0]
 bool isIndReg(string s) {
+    return s.size() == 4 && s[0] == '[' && s[1] == 'R' && isdigit(s[2]) && s[3] == ']';
     // TODO Student A: check s starts with '[', ends with ']', middle is R+digit
-    return false;
+
 }
 
 // Author: Student A
 // DESC: Check if a string is an indirect number like [20]
 bool isIndNum(string s) {
+    if (s.size() < 3) return false;
+    if (s[0] != '[' || s[s.size()-1] != ']') return false;
+    string inner = s.substr(1, s.size()-2);
+    for (int i = 0; i < (int)inner.size(); i++)
+        if (!isdigit(inner[i])) return false;
+    return inner.size() > 0; 
     // TODO Student A: check s starts with '[', ends with ']', middle is digit
-    return false;
+
 }
 
 // Author: Student A
 // DESC: Remove the [ and ] brackets from a string
 // Example: "[R2]" → "R2",   "[20]" → "20"
 string removeBrackets(string s) {
+    return s.substr(1, s.size() - 2); 
     // TODO Student A: return s without first and last character
-    return s;
+
 }
 
 // Author: Student A
 // DESC: Get the register number from a string like "R3" → returns 3
 int getRegNum(string s) {
-    // TODO Student A: check isReg(s), then return atoi of s after 'R'
-    return 0;
+    if (!isReg(s)) {
+        cout << "ERROR: Not a valid register: " << s << endl;
+        exit(1);
+    }
+    return atoi(s.substr(1).c_str());
 }
 
 // Author: Student A
 // DESC: Split a string into two parts at the first comma
 // Example: "R0, R1" → left="R0", right="R1"
 void splitTwo(string s, char delim, string& left, string& right) {
+    int pos = s.find(delim);
+    left  = trim(s.substr(0, pos));
+    right = trim(s.substr(pos + 1)); 
     // TODO Student A: find delim position
     //                 left  = everything before it (trimmed)
     //                 right = everything after it (trimmed)
@@ -1564,8 +1586,8 @@ void splitTwo(string s, char delim, string& left, string& right) {
 class Runner {
 private:
     CPU      cpu;
-    MyVector instructions;    // stores raw text lines
-    MyQueue  programQueue;    // queue version of the program
+    MyVector<string> instructions;    // stores raw text lines
+    MyQueue<string>  programQueue;    // queue version of the program
     string   outputFile;
 
     // ----------------------------------------------------------
@@ -1577,17 +1599,34 @@ private:
     // Author: Student A
     // DESC: Parse MOV instruction (all 3 modes)
     Instruction* parseMov(string rest) {
+        string left, right;
+        splitTwo(rest, ',', left, right);
+        int dest = getRegNum(left);
+        if (isReg(right))
+            return new MovInstruction(dest, getRegNum(right), false);
+        if (isIndReg(right))
+            return new MovInstruction(dest, getRegNum(removeBrackets(right)), true);
+        return new MovInstruction(dest, atoi(right.c_str())); 
         // TODO Student A:
         // split rest by comma into left and right
         // if right is a register:        return new MovInstruction(dest, src, false)
         // if right is [register]:        return new MovInstruction(dest, src, true)
         // if right is a number:          return new MovInstruction(dest, number)
-        return nullptr;
+
     }
 
     // Author: Student A
     // DESC: Parse ADD, SUB, MUL, DIV instructions
     Instruction* parseArith(string opcode, string rest) {
+        string left, right;
+        splitTwo(rest, ',', left, right);
+        int dest = getRegNum(left);
+        bool isImm = !isReg(right);
+        int val = isImm ? atoi(right.c_str()) : getRegNum(right);
+        if (opcode == "ADD") return new AddInstruction(dest, val, isImm);
+        if (opcode == "SUB") return new SubInstruction(dest, val, isImm);
+        if (opcode == "MUL") return new MulInstruction(dest, val, isImm);
+        if (opcode == "DIV") return new DivInstruction(dest, val, isImm);
         // TODO Student A:
         // split rest by comma
         // get dest register
@@ -1600,6 +1639,14 @@ private:
     // Author: Student A
     // DESC: Parse ROL, ROR, SHL, SHR instructions
     Instruction* parseShift(string opcode, string rest) {
+        string left, right;
+        splitTwo(rest, ',', left, right);
+        int dest  = getRegNum(left);
+        int count = atoi(right.c_str());
+        if (opcode == "ROL") return new RolInstruction(dest, count);
+        if (opcode == "ROR") return new RorInstruction(dest, count);
+        if (opcode == "SHL") return new ShlInstruction(dest, count);
+        if (opcode == "SHR") return new ShrInstruction(dest, count);
         // TODO Student A:
         // split rest by comma
         // left = register, right = count number
@@ -1610,18 +1657,53 @@ private:
     // Author: Student A
     // DESC: Parse LOAD and STORE instructions
     Instruction* parseMemory(string opcode, string rest) {
+        string left, right;
+        splitTwo(rest, ',', left, right);
+
+        if (opcode == "LOAD") {
+            int dest = getRegNum(left);
+            if (isIndReg(right))
+                return new LoadInstruction(dest, getRegNum(removeBrackets(right)), true);
+            // isIndNum
+            return new LoadInstruction(dest, atoi(removeBrackets(right).c_str()), false);
+        }
+        // STORE
+        if (isIndReg(left)) {
+            // STORE [Rx], Rs
+            int addrReg = getRegNum(removeBrackets(left));
+            int srcReg  = getRegNum(right);
+            return new StoreInstruction(srcReg, addrReg, true);
+        }
+        if (isReg(left)) {
+            // STORE Rx, 43
+            int srcReg = getRegNum(left);
+            int addr   = atoi(right.c_str());
+            return new StoreInstruction(srcReg, addr, false);
+        }
+        // STORE 20, Rs
+        int addr   = atoi(left.c_str());
+        int srcReg = getRegNum(right);
+        return new StoreInstruction(srcReg, addr, false);
+    }
         // TODO Student A:
         // LOAD: split by comma, left=dest register, right=[addr] or [Rx]
         // STORE: split by comma, handle 3 formats:
         //        STORE [R2], R1  (indirect)
         //        STORE R1, 43   (register to fixed address)
         //        STORE 20, R3   (fixed address, register)
-        return nullptr;
-    }
+
 
     // Author: Student A
     // DESC: Parse PUSH, POP, RESET, INPUT, DISPLAY, INC, DEC instructions
     Instruction* parseSimple(string opcode, string rest) {
+        rest = trim(rest);
+        if (opcode == "PUSH")    return new PushInstruction(getRegNum(rest));
+        if (opcode == "POP")     return new PopInstruction(getRegNum(rest));
+        if (opcode == "INC")     return new IncInstruction(getRegNum(rest));
+        if (opcode == "DEC")     return new DecInstruction(getRegNum(rest));
+        if (opcode == "INPUT")   return new InputInstruction(getRegNum(rest));
+        if (opcode == "DISPLAY") return new DisplayInstruction(getRegNum(rest));
+        if (opcode == "RESET")   return new ResetInstruction(rest);
         // TODO Student A:
         // These all take one operand only
         // use opcode to decide which instruction class to create
@@ -1632,7 +1714,39 @@ private:
     // DESC: Parse one full line of assembly text into an Instruction object
     //       Calls the helper parse functions above
     Instruction* parseLine(string line, int lineNum) {
-        // TODO Student A:
+        line = trim(removeComment(line));
+        if (line.empty()) return nullptr;
+
+        // split opcode from rest
+        string opcode, rest;
+        int spacePos = line.find(' ');
+        if (spacePos == (int)string::npos) {
+            opcode = line;
+            rest   = "";
+        } else {
+            opcode = trim(line.substr(0, spacePos));
+            rest   = trim(line.substr(spacePos + 1));
+        }
+        opcode = toUpper(opcode);
+
+        if (opcode == "MOV")
+            return parseMov(rest);
+        if (opcode == "ADD" || opcode == "SUB" || opcode == "MUL" || opcode == "DIV")
+            return parseArith(opcode, rest);
+        if (opcode == "ROL" || opcode == "ROR" || opcode == "SHL" || opcode == "SHR")
+            return parseShift(opcode, rest);
+        if (opcode == "LOAD" || opcode == "STORE")
+            return parseMemory(opcode, rest);
+
+        // everything else (PUSH, POP, INC, DEC, INPUT, DISPLAY, RESET)
+        Instruction* instr = parseSimple(opcode, rest);
+        if (instr == nullptr) {
+            cout << "ERROR: Unknown opcode '" << opcode
+                 << "' on line " << lineNum << endl;
+            exit(1);
+        }
+        return instr;
+            // TODO Student A:
         // 1. trim and removeComment from line
         // 2. if empty, return nullptr
         // 3. split into opcode and rest
@@ -1644,7 +1758,7 @@ private:
         //    LOAD/STORE             → parseMemory(opcode, rest)
         //    everything else        → parseSimple(opcode, rest)
         // 6. if opcode unknown, print error and exit
-        return nullptr;
+
     }
 
 public:
@@ -1652,6 +1766,51 @@ public:
     // DESC: Main method - load the file, execute all instructions,
     //       display results, write output file
     void run(string filename) {
+        outputFile = filename + ".out";
+
+        // 2. open file
+        ifstream file(filename);
+        if (!file.is_open()) {
+            cout << "ERROR: Cannot open file: " << filename << endl;
+            exit(1);
+        }
+
+        // 3. read lines into instructions vector and programQueue
+        string line;
+        while (getline(file, line)) {
+            instructions.push_back(line);
+            programQueue.enqueue(line);
+        }
+
+        // 4. close file
+        file.close();
+
+        // 5. print how many lines loaded
+        cout << "Loaded " << instructions.getSize()
+             << " lines from " << filename << endl;
+
+        // 6. reset CPU
+        cpu.reset();
+
+        // 7. print START and initial state
+        cout << "=== START ===" << endl;
+        cpu.displayState();
+
+        // 8. loop through instructions
+        for (int i = 0; i < instructions.getSize(); i++) {
+            Instruction* instr = parseLine(instructions.get(i), i + 1);
+            if (instr == nullptr) continue;   // blank/comment line
+            instr->execute(cpu);
+            cpu.incrementPC();
+            cpu.displayState();
+            delete instr;
+        }
+
+        // 9. print END
+        cout << "=== END ===" << endl;
+
+        // 10. write output file
+        cpu.writeOutput(outputFile);
         // TODO Student A:
         // 1. set outputFile name
         // 2. open file with ifstream
@@ -1682,6 +1841,14 @@ public:
 // DESC: Entry point of the program.
 //       Reads the .asm filename from command line and runs it.
 int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        cout << "Usage: vm <program.asm>" << endl;
+        cout << "  Windows: vm.exe program.asm" << endl;
+        cout << "  Linux:   ./vm program.asm" << endl;
+        return 1;
+    }
+    Runner runner;
+    runner.run(argv[1]);
     // TODO Student A:
     // if argc < 2: print usage instructions and return 1
     // else: create Runner, call runner.run(argv[1])
