@@ -1684,13 +1684,14 @@ private:
         int addr   = atoi(left.c_str());
         int srcReg = getRegNum(right);
         return new StoreInstruction(srcReg, addr, false);
-    }
+    
         // TODO Student A:
         // LOAD: split by comma, left=dest register, right=[addr] or [Rx]
         // STORE: split by comma, handle 3 formats:
         //        STORE [R2], R1  (indirect)
         //        STORE R1, 43   (register to fixed address)
         //        STORE 20, R3   (fixed address, register)
+    }
 
 
     // Author: Student A
