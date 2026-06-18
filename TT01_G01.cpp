@@ -367,7 +367,7 @@ public:
             ZF = 0;
  
         // Carry: result is completely outside 8-bit range
-        if (result > 255 || result < -255)
+        if (result > 127 || result < -128)
             CF = 1;
         else
             CF = 0;
@@ -457,7 +457,12 @@ public:
     }
 };
 
-
+//intToString is a simple help function
+string intToString(int n) {
+    char buf[20];
+    sprintf(buf, "%d", n);
+    return string(buf);
+} 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // SECTION 4 : CPU CLASS
 // ASSIGNED TO : Student C
@@ -475,15 +480,15 @@ public:
 class CPU {
 private:
     GeneralRegister registers[8];   // R0 to R7
-    FlagRegister    flags;          // OF, UF, CF, ZF
-    Memory          memory;         // 64 bytes of storage
-    MyStack         vmStack;        // 8-slot system stack
-    int             PC;             // Program Counter
-    int             SI;             // Stack Index
+    FlagRegister flags;             // OF, UF, CF, ZF
+    Memory memory;                  // 64 bytes of storage
+    MyStack<int> vmStack;           // 8-slot system stack
+    int PC;                         // Program Counter
+    int SI;                         // Stack Index
 
 public:
     // Author: Student C
-    // DESC: Constructor - set PC and SI to 0
+    // Start PC and SI at 0
     CPU() {
         PC = 0;
         SI = 0;
@@ -493,97 +498,59 @@ public:
     // REGISTER ACCESS
     // ----------------------------------------------------------
 
-    // Author: Student C
-    // DESC: Get the value stored in register number n (0 to 7)
+    // Get value from a register
     int getRegValue(int n) {
         return registers[n].getValue();
     }
 
-    // Author: Student C
-    // DESC: Set a value into register number n
-    //       Also calls flags.updateFlags() before storing
+    //Save value and update flags
     void setRegValue(int n, int v) {
         flags.updateFlags(v);
         registers[n].setValue(v);
     }
 
-    // ----------------------------------------------------------
-    // FLAG ACCESS
-    // ----------------------------------------------------------
-
-    // Author: Student C
-    // DESC: Returns reference to the flag register
-    FlagRegister& getFlags() {
-        return flags;
-    }
-
-    // Author: Student C
-    // DESC: Reset one flag by name (calls flags.resetOne)
+    // Clear one flag
     void resetFlag(string name) {
         flags.resetOne(name);
     }
 
-    // ----------------------------------------------------------
-    // MEMORY ACCESS
-    // ----------------------------------------------------------
-
-    // Author: Student C
-    // DESC: Read value from memory at given address
+    // Read from memory
     int memRead(int address) {
         return memory.read(address);
     }
 
-    // Author: Student C
-    // DESC: Write value to memory at given address
+    // Write to memory
     void memWrite(int address, int value) {
         memory.write(address, value); 
     }
 
-    // ----------------------------------------------------------
-    // PROGRAM COUNTER ACCESS
-    // ----------------------------------------------------------
-
-    // Author: Student C
-    // DESC: Returns current value of the Program Counter
+    //Get program counter
     int getPC() {
         return PC;
     }
 
-    // Author: Student C
-    // DESC: Adds 1 to the Program Counter after each instruction
+    //Go to next instrution
     void incrementPC() {
         PC++;
     }
 
-    // ----------------------------------------------------------
-    // STACK ACCESS
-    // ----------------------------------------------------------
-
-    // Author: Student C
-    // DESC: Push a value onto the VM stack and increase SI by 1
+    //Push value onto stack
     void stackPush(int value) {
         vmStack.push(value);
         SI++;
     }
 
-    // Author: Student C
-    // DESC: Pop a value from the VM stack and decrease SI by 1
+    //Pop value from stack
     int stackPop() {
         SI--;
         return vmStack.pop();
     }
-    // Author: Student C
-    // DESC: Returns current Stack Index value
+    //Get stack index
     int getSI() {
         return SI;
     }
 
-    // ----------------------------------------------------------
-    // RESET
-    // ----------------------------------------------------------
-
-    // Author: Student C
-    // DESC: Reset the entire CPU back to starting state
+    // Reset everything
     void reset() {
         for(int i = 0; i < 8; i++) {
             registers[i].reset();
@@ -597,39 +564,23 @@ public:
         SI = 0;    
     }
 
-    // ----------------------------------------------------------
-    // BIT HELPERS (used by ROL, ROR, SHL, SHR)
-    // ----------------------------------------------------------
-
-    // Author: Student C
-    // DESC: Convert a number into 8 individual bits
-    //       bits[0] = LSB (least significant bit)
-    //       bits[7] = MSB (most significant bit)
+    //Split numer into 8 bits
     void toBits(int value, int bits[8]) {
-
-        unsigned char x = static_cast<unsigned char>(value);
-
-        for(int i = 0; i < 8; i++) {
+        unsigned char x = (unsigned char)value;
+        for (int i = 0; i < 8; i++)
             bits[i] = (x >> i) & 1;
-        }
     }
 
-    // Author: Student C
-    // DESC: Convert 8 individual bits back into a number
+    //Join 8 bits into number
     int fromBits(int bits[8]) {
-
         unsigned char value = 0;
-
-        for(int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++)
             value |= (bits[i] << i);
-        }
-
-        return static_cast<signed char>(value);
+        return (signed char)value;
     }
 
     // Author: Student C
-    // DESC: Rotate all bits left by count positions
-    //       The leftmost bit wraps around to the right
+    //Rotate bits left
     int rotateLeft(int value, int count) {
 
         int bits[8];
@@ -653,8 +604,7 @@ public:
     }
 
     // Author: Student C
-    // DESC: Rotate all bits right by count positions
-    //       The rightmost bit wraps around to the left
+    //rotate bits right
     int rotateRight(int value, int count) {
 
         int bits[8];
@@ -678,22 +628,16 @@ public:
     }
 
     // Author: Student C
-    // DESC: Shift all bits left by count positions
-    //       Empty spots on the right are filled with 0
+    //Shift bits left
     int shiftLeft(int value, int count) {
+        if (count >= 8) return 0;
 
         int bits[8];
-
         toBits(value, bits);
 
-        count %= 8;
-
-        for(int c = 0; c < count; c++) {
-
-            for(int i = 7; i > 0; i--) {
+        for (int c = 0; c < count; c++) {
+            for (int i = 7; i > 0; i--)
                 bits[i] = bits[i - 1];
-            }
-
             bits[0] = 0;
         }
 
@@ -701,22 +645,16 @@ public:
     }
 
     // Author: Student C
-    // DESC: Shift all bits right by count positions
-    //       Empty spots on the left are filled with 0
+    //Shift bits right
     int shiftRight(int value, int count) {
+        if (count >= 8) return 0;
 
         int bits[8];
-
         toBits(value, bits);
 
-        count %= 8;
-
-        for(int c = 0; c < count; c++) {
-
-            for(int i = 0; i < 7; i++) {
+        for (int c = 0; c < count; c++) {
+            for (int i = 0; i < 7; i++)
                 bits[i] = bits[i + 1];
-            }
-
             bits[7] = 0;
         }
 
@@ -728,7 +666,7 @@ public:
     // ----------------------------------------------------------
 
     // Author: Student C
-    // DESC: Print all register values and flags to the screen
+    //Show registers and flags
     void displayState() {
 
         cout << "Registers:" << endl;
@@ -750,17 +688,14 @@ public:
     }
 
     // Author: Student C
-    // DESC: Build the #Registers# line for the output file
+    //Make register and flags
     string buildRegistersLine() {
     string result = "#Registers#";
 
     for (int i = 0; i < 8; i++) {
         int v = registers[i].getValue();
 
-        // keep within display range (optional safety)
-        if (v < 0) v = 0;
-
-        char buffer[10];
+        char buffer[12];
         sprintf(buffer, "%04d", v);
 
         result += string(buffer) + "#";
@@ -770,20 +705,28 @@ public:
 }
 
     // Author: Student C
-    // DESC: Build the #Flags# line for the output file
+    //Make flag output line
     string buildFlagsLine() {
-    string result = "#Flags#";
+        string result = "#Flags#";
+        char buf[5];
 
-    result += to_string(flags.getOF()) + "#";
-    result += to_string(flags.getUF()) + "#";
-    result += to_string(flags.getCF()) + "#";
-    result += to_string(flags.getZF()) + "#";
+        sprintf(buf, "%d", flags.getOF());
+        result += "OF#" + string(buf) + "#";
 
-    return result;
-}
+        sprintf(buf, "%d", flags.getUF());
+        result += "UF#" + string(buf) + "#";
+
+        sprintf(buf, "%d", flags.getCF());
+        result += "CF#" + string(buf) + "#";
+
+        sprintf(buf, "%d", flags.getZF());
+        result += "ZF#" + string(buf) + "#";
+
+        return result;
+    }
 
     // Author: Student C
-    // DESC: Build the #Memory# section (8 rows of 8 values)
+    // memory output lines
     string buildMemoryLines() {
     string result;
     int* mem = memory.getRaw();
@@ -794,7 +737,7 @@ public:
         for (int col = 0; col < 8; col++) {
             int val = mem[row * 8 + col];
 
-            char buffer[10];
+            char buffer[12];
             sprintf(buffer, "%04d", val);
 
             result += string(buffer) + "#";
@@ -807,7 +750,7 @@ public:
 }
 
     // Author: Student C
-    // DESC: Combine all output lines and write to file and screen
+    //Save output to file
     void writeOutput(string filename) {
 
     ofstream out(filename);
@@ -821,7 +764,7 @@ public:
     fullOutput += "#Begin#\n";
     fullOutput += regLine + "\n";
     fullOutput += flagLine + "\n";
-    fullOutput += "PC=" + to_string(PC) + "\n";
+    fullOutput += "#PC#" + intToString(PC) + "#\n";
     fullOutput += memLine;
     fullOutput += "#End#\n";
 
@@ -847,7 +790,7 @@ public:
 
 // ============================================================
 // CLASS : Instruction (ABSTRACT BASE CLASS)
-// AUTHOR: Student C - [Full Name]
+// AUTHOR: Student C - [LOH ZI JIAN]
 // DESC  : Parent class for ALL instruction types.
 //         Every instruction must implement execute() and toString().
 //         This enables polymorphism - Runner stores Instruction*
@@ -876,7 +819,7 @@ public:
 
 // ============================================================
 // CLASS : MovInstruction
-// AUTHOR: Student C - [Full Name]
+// AUTHOR: Student C - [LOH ZI JIAN]
 // DESC  : Handles the MOV instruction in 3 modes:
 //         Mode 1 - MOV R0, 10    (store a number directly)
 //         Mode 2 - MOV R0, R1    (copy from another register)
@@ -892,17 +835,18 @@ private:
 public:
     // Author: Student C
     // DESC: Constructor for MOV R0, 10 (immediate mode)
-    MovInstruction(int dest, int imm) {
+    MovInstruction(int d, int imm) {
         dest = d;
         immediate = imm;
         isImmediate = true;
         isIndirect = false;
         src = 0;    
     }
+  
 
     // Author: Student C
     // DESC: Constructor for MOV R0, R1 or MOV R0, [R1]
-    MovInstruction(int dest, int src, bool indirect) {
+    MovInstruction(int d, int s, bool indirect) {
         dest = d;
         src = s;
         isImmediate = false;
@@ -929,17 +873,17 @@ public:
     // DESC: Return MOV instruction as text
     string toString() override {
         if (isImmediate)
-            return "MOV R" + to_string(dest) + ", " + to_string(immediate);
+            return "MOV R" + intToString(dest) + ", " + intToString(immediate);
         if (isIndirect)
-            return "MOV R" + to_string(dest) + ", [R" + to_string(src) + "]";
-        return "MOV R" + to_string(dest) + ", R" + to_string(src);
+            return "MOV R" + intToString(dest) + ", [R" + intToString(src) + "]";
+        return "MOV R" + intToString(dest) + ", R" + intToString(src);
     }
 };
 
 
 // ============================================================
 // CLASS : InputInstruction
-// AUTHOR: Student C - [Full Name]
+// AUTHOR: Student C - [LOH ZI JIAN]
 // DESC  : Handles INPUT Rx
 //         Reads a number from keyboard and stores in register
 // ============================================================
@@ -953,26 +897,25 @@ public:
         dest = d;
     }
     // Author: Student C
-    // DESC: Show "?" prompt, read number, check flags, store in register
+    // DESC: Read number and store in register
     void execute(CPU& cpu) override {
         int value;
         cout << "? ";
         cin >> value;
 
-        cpu.getFlags().updateFlags(value);
         cpu.setRegValue(dest, value);
     }
 
     // Author: Student C
     string toString() override {
-        return "INPUT R" + to_string(dest);
+        return "INPUT R" + intToString(dest);
     }
 };
 
 
 // ============================================================
 // CLASS : DisplayInstruction
-// AUTHOR: Student C - [Full Name]
+// AUTHOR: Student C - [LOH ZI JIAN]
 // DESC  : Handles DISPLAY Rx
 //         Prints the value of a register to the screen
 // ============================================================
@@ -994,14 +937,14 @@ public:
 
     // Author: Student C
     string toString() override {
-        return "DISPLAY R" + to_string(src);
+        return "DISPLAY R" + intToString(src);
     }
 };
 
 
 // ============================================================
 // CLASS : AddInstruction
-// AUTHOR: Student C - [Full Name]
+// AUTHOR: Student C - [LOH ZI JIAN]
 // DESC  : Handles ADD Rd, Rs  and  ADD Rd, number
 //         Adds source to destination and stores result in destination
 // ============================================================
@@ -1036,15 +979,15 @@ public:
     // Author: Student C
     string toString() override {
         if (isImmediate)
-            return "ADD R" + to_string(dest) + ", " + to_string(immediate);
-        return "ADD R" + to_string(dest) + ", R" + to_string(src);
+            return "ADD R" + intToString(dest) + ", " + intToString(immediate);
+        return "ADD R" + intToString(dest) + ", R" + intToString(src);
     }
 };
 
 
 // ============================================================
 // CLASS : SubInstruction
-// AUTHOR: Student C - [Full Name]
+// AUTHOR: Student C - [LOH ZI JIAN]
 // DESC  : Handles SUB Rd, Rs  and  SUB Rd, number
 //         Subtracts source from destination
 // ============================================================
@@ -1080,15 +1023,15 @@ public:
     // Author: Student C
      string toString() override {
         if (isImmediate)
-            return "SUB R" + to_string(dest) + ", " + to_string(immediate);
-        return "SUB R" + to_string(dest) + ", R" + to_string(src);
+            return "SUB R" + intToString(dest) + ", " + intToString(immediate);
+        return "SUB R" + intToString(dest) + ", R" + intToString(src);
     }
 };
 
 
 // ============================================================
 // CLASS : LoadInstruction
-// AUTHOR: Student C - [Full Name]
+// AUTHOR: Student C - [LOH ZI JIAN]
 // DESC  : Handles LOAD Rd, [address]  and  LOAD Rd, [Rs]
 //         Reads a value from memory into a register
 // ============================================================
@@ -1120,15 +1063,15 @@ public:
     // Author: Student C
     string toString() override {
         if (useReg)
-            return "LOAD R" + to_string(dest) + ", [R" + to_string(addrReg) + "]";
-        return "LOAD R" + to_string(dest) + ", [" + to_string(address) + "]";
+            return "LOAD R" + intToString(dest) + ", [R" + intToString(addrReg) + "]";
+        return "LOAD R" + intToString(dest) + ", [" + intToString(address) + "]";
     }
 };
 
 
 // ============================================================
 // CLASS : StoreInstruction
-// AUTHOR: Student C - [Full Name]
+// AUTHOR: Student C - [LOH ZI JIAN]
 // DESC  : Handles STORE Rx, address  and  STORE [Rx], Rs
 //         Writes a register value into memory
 // ============================================================
@@ -1160,8 +1103,8 @@ public:
     // Author: Student C
     string toString() override {
         if (useReg)
-            return "STORE [R" + to_string(addrReg) + "], R" + to_string(srcReg);
-        return "STORE R" + to_string(srcReg) + ", " + to_string(address);
+            return "STORE [R" + intToString(addrReg) + "], R" + intToString(srcReg);
+        return "STORE R" + intToString(srcReg) + ", " + intToString(address);
     }
 };
 
