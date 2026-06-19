@@ -48,14 +48,12 @@ private:
     int size;
 
 public:
-    // Author: Student B
-    // DESC: Constructor - set size to 0
+    // Constructor - set size to 0
     MyVector() {
         size = 0;
     }
 
-    // Author: Student B
-    // DESC: Add a new item to the end of the array
+    // Add a new item to the end of the array
     void push_back(T item) {
         if (size >= 256) {
             cout << "ERROR: Too many instructions (max 256)." << endl;
@@ -65,8 +63,7 @@ public:
         size++;
     }
 
-    // Author: Student B
-    // DESC: Get the item at a given index position
+    // Get the item at a given index position
     T get(int index) {
         if (index < 0 || index >= size) {
             cout << "ERROR: Index out of range." << endl;
@@ -75,14 +72,12 @@ public:
         return data[index];
     }
 
-    // Author: Student B
-    // DESC: Returns how many items are stored
+    // Returns how many items are stored
     int getSize() {
         return size;
     }
 
-    // Author: Student B
-    // DESC: Remove all items
+    // Remove all items
     void clear() {
         size = 0;
     }
@@ -103,15 +98,12 @@ private:
     int top;
 
 public:
-    // Author: Student B
-    // DESC: Constructor - set top to -1 meaning empty
+    // Constructor - set top to -1 meaning empty
     MyStack() {
         top = -1;
     }
 
-    // Author: Student B
-    // DESC: Push a value onto the top of the stack
-    //       Print error and exit if stack is already full
+    // Push a value onto the top of the stack
     void push(T value) {
         if (top >= 7) {
             cout << "ERROR: Stack is full. Cannot push." << endl;
@@ -121,9 +113,7 @@ public:
         data[top] = value;
     }
 
-    // Author: Student B
-    // DESC: Remove and return the top value from the stack
-    //       Print error and exit if stack is empty
+    // Remove and return the top value from the stack
     T pop() {
         if (top < 0) {
             cout << "ERROR: Stack is empty. Program crashed." << endl;
@@ -134,14 +124,12 @@ public:
         return value;
     }
 
-    // Author: Student B
-    // DESC: Returns true if the stack has no items
+    // Returns true if the stack has no items
     bool isEmpty() {
         return top < 0;
     }
 
-    // Author: Student B
-    // DESC: Returns how many items are in the stack
+    // Returns how many items are in the stack
     int getSize() {
         return top + 1;
     }
@@ -164,16 +152,14 @@ private:
     int size;
 
 public:
-    // Author: Student B
-    // DESC: Constructor - set front, rear, size all to 0
+    // Constructor - set front, rear, size all to 0
     MyQueue() {
         front = 0;
         rear  = 0;
         size  = 0;
     }
 
-    // Author: Student B
-    // DESC: Add an item to the back of the queue
+    // Add an item to the back of the queue
     void enqueue(T item) {
         if (size >= 256) {
             cout << "ERROR: Queue is full." << endl;
@@ -184,8 +170,7 @@ public:
         size++;
     }
 
-    // Author: Student B
-    // DESC: Remove and return item from the front of the queue
+    // Remove and return item from the front of the queue
     T dequeue() {
         if (size == 0) {
             cout << "ERROR: Queue is empty." << endl;
@@ -197,14 +182,12 @@ public:
         return item;
     }
 
-    // Author: Student B
-    // DESC: Returns true if queue has no items
+    // Returns true if queue has no items
     bool isEmpty() {
         return size == 0;
     }
 
-    // Author: Student B
-    // DESC: Returns how many items are in the queue
+    // Returns how many items are in the queue
     int getSize() {
         return size;
     }
@@ -227,26 +210,22 @@ protected:
     int value; 
 
 public:
-    // Author: Student B
-    // DESC: Constructor - set value to 0
+    // Constructor - set value to 0
     Register() {
         value = 0;
     }
 
-    // Author: Student B
-    // DESC: Returns the current value stored in this register
+    // Returns the current value stored in this register
     int getValue() {
         return value;
     }
 
-    // Author: Student B
-    // DESC: Resets register value back to 0
+    // Resets register value back to 0
     void reset() {
         value = 0;
     }
 
-    // Author: Student B
-    // DESC: Sets the value (virtual so child class can override)
+    // Sets the value 
     virtual void setValue(int v) {
         value = v;
     }
@@ -261,10 +240,8 @@ public:
 //         Keeps value clamped between -128 and 127.
 // ============================================================
 class GeneralRegister : public Register{
-public:    
-    // Author: Student B    
-    // DESC: Sets the value but clamps it to -128..127 range
-    //       Overrides the parent Register's setValue
+public:   
+    // Sets the value but clamps it to -128-127 range and overrides the parent Register's setValue
     void setValue(int v) override {
         if (v > 127) v = 127;
         if (v < -128) v = -128;
@@ -287,9 +264,8 @@ private:
    int CF;
    int ZF;
 
-public:
-    // Author: Student B    
-    // DESC: Constructor - set all flags to 0
+public:  
+    // Constructor - set all flags to 0
     FlagRegister() {
         OF = 0;
         UF = 0;
@@ -331,8 +307,7 @@ public:
         ZF = v;
     }
 
-    // Author: Student B
-    // DESC: Set all flags back to 0
+    // Set all flags back to 0
     void resetAll(){
         OF = 0;
         UF = 0;
@@ -340,13 +315,11 @@ public:
         ZF = 0;
     }
 
-    // Author: Student B
-    // DESC: Automatically update all flags based on a result value
-    //       Called after every arithmetic operation
-    //       OF = 1 if result > 127
-    //       UF = 1 if result < -128
-    //       ZF = 1 if result == 0
-    //       CF = 1 if result > 255 or result < -255
+    // Automatically update all flags based on a result value and called after every arithmetic operation
+    // OF = 1 if result > 127
+    // UF = 1 if result < -128
+    // ZF = 1 if result == 0
+    // CF = 1 if result > 127 or result < -128
     void updateFlags(int result) {
         // Overflow: result is too big for a signed byte
         if (result > 127)
@@ -373,9 +346,7 @@ public:
             CF = 0;
     }
 
-    // Author: Student B
-    // DESC: Reset one specific flag to 0 by its name
-    //       Valid names: "OF", "UF", "CF", "ZF"
+    // Reset one specific flag to 0 by its name and valid names: "OF", "UF", "CF", "ZF"
     void resetOne(string name) {
         if (name == "OF") {
             OF = 0;
@@ -410,17 +381,14 @@ private:
     int mem[64];   // 64 memory slots, each holds one number
 
 public:
-    // Author: Student B
-    // DESC: Constructor - fill all 64 slots with 0
+    // Constructor - fill all 64 slots with 0
     Memory() {
         for (int i = 0; i < 64; i++) {
             mem[i] = 0;
         }
     }
 
-    // Author: Student B
-    // DESC: Read and return value at given memory address
-    //       Print error and exit if address is not 0..63
+    // Read and return value at given memory address and print error and exit if address is not 0 to 63
     int read(int address) {
         if (address < 0 || address > 63) {
             cout << "ERROR: Memory address " << address
@@ -430,9 +398,7 @@ public:
         return mem[address];
     }
 
-    // Author: Student B
-    // DESC: Write a value to a given memory address
-    //       Print error and exit if address is not 0..63
+    // Write a value to a given memory address and print error and exit if address is not 0 to 63
     void write(int address, int value) {
         if (address < 0 || address > 63) {
             cout << "ERROR: Memory address " << address
@@ -442,14 +408,12 @@ public:
         mem[address] = value;
     }
 
-    // Author: Student B
-    // DESC: Returns the raw memory array (used for output display)
+    // Returns the raw memory array 
     int* getRaw() {
         return mem;
     }
 
-    // Author: Student B
-    // DESC: Clear all memory slots back to 0
+    // Clear all memory slots back to 0
     void reset() {
         for (int i = 0; i < 64; i++) {
             mem[i] = 0;
