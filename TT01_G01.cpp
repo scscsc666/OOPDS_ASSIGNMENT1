@@ -10,7 +10,7 @@
 //   Student A - [Full Name] - [Student ID]
 //   Student B - [Full Name] - [Student ID]
 //   Student C - [Full Name] - [Student ID]
-//   Student D - [Full Name] - [Student ID]
+//   Student D - [MANESH MATHIALAGEN] - [253UC256FC]
 // ============================================================
 // HOW TO COMPILE:
 //   g++ TT01_G01.cpp -o vm
@@ -838,260 +838,319 @@ public:
 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // SECTION 7 : ADVANCED INSTRUCTIONS
-// ASSIGNED TO : Student D
+// ASSIGNED TO : MANESH MATHIALAGEN
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 // ============================================================
 // CLASS : MulInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles MUL Rd, Rs  and  MUL Rd, number
 //         Multiplies destination by source
 // ============================================================
 class MulInstruction : public Instruction {
 private:
-    // TODO Student D: int dest, src, immediate, bool isImmediate
+    int dest;
+    int src;
+    int immediate;
+    bool isImmediate;
 
 public:
-    // Author: Student D
+    // Author: MANESH MATHIALAGEN
     MulInstruction(int d, int s, bool imm) {
-        // TODO Student D: store d, s, imm
+        dest = d;
+        isImmediate = imm;
+        if (isImmediate) {
+            immediate = s;
+        } else {
+            src = s;
+        }
     }
 
-    // Author: Student D
+    // Author: MANESH MATHIALAGEN
     // DESC: result = dest * src (or immediate), store back to dest
     void execute(CPU& cpu) override {
-        // TODO Student D: calculate result, cpu.setRegValue(dest, result)
+        int val1 = cpu.getRegValue(dest);
+        int val2 = isImmediate ? immediate : cpu.getRegValue(src);
+        cpu.setRegValue(dest, val1 * val2);
     }
 
-    // Author: Student D
-    string toString() override { /* TODO */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "MUL R" + to_string(dest) + ", " + (isImmediate ? to_string(immediate) : "R" + to_string(src)); 
+    }
 };
 
 
 // ============================================================
 // CLASS : DivInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles DIV Rd, Rs  and  DIV Rd, number
 //         Divides destination by source
 //         IMPORTANT: must print error and exit if dividing by 0
 // ============================================================
 class DivInstruction : public Instruction {
 private:
-    // TODO Student D: int dest, src, immediate, bool isImmediate
+    int dest;
+    int src;
+    int immediate;
+    bool isImmediate;
 
 public:
-    // Author: Student D
+    // Author: MANESH MATHIALAGEN
     DivInstruction(int d, int s, bool imm) {
-        // TODO Student D: store d, s, imm
+        dest = d;
+        isImmediate = imm;
+        if (isImmediate) {
+            immediate = s;
+        } else {
+            src = s;
+        }
     }
 
-    // Author: Student D
+    // Author: MANESH MATHIALAGEN
     // DESC: result = dest / src (or immediate), store back to dest
     //       MUST check for divide by zero before dividing
     void execute(CPU& cpu) override {
-        // TODO Student D:
-        // get divisor (from register or immediate)
-        // if divisor == 0: print "ERROR: Division by zero" and exit
-        // result = dest / divisor
-        // cpu.setRegValue(dest, result)
+        int divisor = isImmediate ? immediate : cpu.getRegValue(src);
+        
+        if (divisor == 0) {
+            cout << "ERROR: Division by zero\n";
+            exit(1);
+        }
+        
+        cpu.setRegValue(dest, cpu.getRegValue(dest) / divisor);
     }
 
-    // Author: Student D
-    string toString() override { /* TODO */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "DIV R" + to_string(dest) + ", " + (isImmediate ? to_string(immediate) : "R" + to_string(src)); 
+    }
 };
 
 
 // ============================================================
 // CLASS : IncInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles INC Rx
 //         Adds 1 to the register value
 // ============================================================
 class IncInstruction : public Instruction {
 private:
-    // TODO Student D: int dest
+    int dest;
 
 public:
-    // Author: Student D
-    IncInstruction(int d) { /* TODO: dest = d */ }
-
-    // Author: Student D
-    // DESC: dest = dest + 1
-    void execute(CPU& cpu) override {
-        // TODO Student D: cpu.setRegValue(dest, cpu.getRegValue(dest) + 1)
+    // Author: MANESH MATHIALAGEN
+    IncInstruction(int d) { 
+        dest = d; 
     }
 
-    // Author: Student D
-    string toString() override { /* TODO: return "INC Rx" */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    // DESC: dest = dest + 1
+    void execute(CPU& cpu) override {
+        cpu.setRegValue(dest, cpu.getRegValue(dest) + 1);
+    }
+
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "INC R" + to_string(dest); 
+    }
 };
 
 
 // ============================================================
 // CLASS : DecInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles DEC Rx
 //         Subtracts 1 from the register value
 // ============================================================
 class DecInstruction : public Instruction {
 private:
-    // TODO Student D: int dest
+    int dest;
 
 public:
-    // Author: Student D
-    DecInstruction(int d) { /* TODO: dest = d */ }
-
-    // Author: Student D
-    // DESC: dest = dest - 1
-    void execute(CPU& cpu) override {
-        // TODO Student D: cpu.setRegValue(dest, cpu.getRegValue(dest) - 1)
+    // Author: MANESH MATHIALAGEN
+    DecInstruction(int d) { 
+        dest = d; 
     }
 
-    // Author: Student D
-    string toString() override { /* TODO: return "DEC Rx" */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    // DESC: dest = dest - 1
+    void execute(CPU& cpu) override {
+        cpu.setRegValue(dest, cpu.getRegValue(dest) - 1);
+    }
+
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "DEC R" + to_string(dest); 
+    }
 };
 
 
 // ============================================================
 // CLASS : RolInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles ROL Rx, count
 //         Rotates bits in register left by count positions
 //         Leftmost bit wraps around to the rightmost position
 // ============================================================
 class RolInstruction : public Instruction {
 private:
-    // TODO Student D: int dest, count
+    int dest;
+    int count;
 
 public:
-    // Author: Student D
-    RolInstruction(int d, int c) { /* TODO: dest=d, count=c */ }
-
-    // Author: Student D
-    // DESC: Rotate register bits left, store result back
-    void execute(CPU& cpu) override {
-        // TODO Student D:
-        // int result = cpu.rotateLeft(cpu.getRegValue(dest), count)
-        // cpu.setRegValue(dest, result)
+    // Author: MANESH MATHIALAGEN
+    RolInstruction(int d, int c) { 
+        dest = d;
+        count = c; 
     }
 
-    // Author: Student D
-    string toString() override { /* TODO: return "ROL Rx, count" */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    // DESC: Rotate register bits left, store result back
+    void execute(CPU& cpu) override {
+        int result = cpu.rotateLeft(cpu.getRegValue(dest), count);
+        cpu.setRegValue(dest, result);
+    }
+
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "ROL R" + to_string(dest) + ", " + to_string(count); 
+    }
 };
 
 
 // ============================================================
 // CLASS : RorInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles ROR Rx, count
 //         Rotates bits in register right by count positions
 //         Rightmost bit wraps around to the leftmost position
 // ============================================================
 class RorInstruction : public Instruction {
 private:
-    // TODO Student D: int dest, count
+    int dest;
+    int count;
 
 public:
-    // Author: Student D
-    RorInstruction(int d, int c) { /* TODO: dest=d, count=c */ }
-
-    // Author: Student D
-    // DESC: Rotate register bits right, store result back
-    void execute(CPU& cpu) override {
-        // TODO Student D:
-        // int result = cpu.rotateRight(cpu.getRegValue(dest), count)
-        // cpu.setRegValue(dest, result)
+    // Author: MANESH MATHIALAGEN
+    RorInstruction(int d, int c) { 
+        dest = d;
+        count = c; 
     }
 
-    // Author: Student D
-    string toString() override { /* TODO: return "ROR Rx, count" */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    // DESC: Rotate register bits right, store result back
+    void execute(CPU& cpu) override {
+        int result = cpu.rotateRight(cpu.getRegValue(dest), count);
+        cpu.setRegValue(dest, result);
+    }
+
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "ROR R" + to_string(dest) + ", " + to_string(count); 
+    }
 };
 
 
 // ============================================================
 // CLASS : ShlInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles SHL Rx, count
 //         Shifts bits left by count positions
 //         Empty spots on the right are filled with 0
 // ============================================================
 class ShlInstruction : public Instruction {
 private:
-    // TODO Student D: int dest, count
+    int dest;
+    int count;
 
 public:
-    // Author: Student D
-    ShlInstruction(int d, int c) { /* TODO: dest=d, count=c */ }
-
-    // Author: Student D
-    // DESC: Shift register bits left, fill with 0, store result back
-    void execute(CPU& cpu) override {
-        // TODO Student D:
-        // int result = cpu.shiftLeft(cpu.getRegValue(dest), count)
-        // cpu.setRegValue(dest, result)
+    // Author: MANESH MATHIALAGEN
+    ShlInstruction(int d, int c) { 
+        dest = d;
+        count = c; 
     }
 
-    // Author: Student D
-    string toString() override { /* TODO: return "SHL Rx, count" */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    // DESC: Shift register bits left, fill with 0, store result back
+    void execute(CPU& cpu) override {
+        int result = cpu.shiftLeft(cpu.getRegValue(dest), count);
+        cpu.setRegValue(dest, result);
+    }
+
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "SHL R" + to_string(dest) + ", " + to_string(count); 
+    }
 };
 
 
 // ============================================================
 // CLASS : ShrInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles SHR Rx, count
 //         Shifts bits right by count positions
 //         Empty spots on the left are filled with 0
 // ============================================================
 class ShrInstruction : public Instruction {
 private:
-    // TODO Student D: int dest, count
+    int dest;
+    int count;
 
 public:
-    // Author: Student D
-    ShrInstruction(int d, int c) { /* TODO: dest=d, count=c */ }
-
-    // Author: Student D
-    // DESC: Shift register bits right, fill with 0, store result back
-    void execute(CPU& cpu) override {
-        // TODO Student D:
-        // int result = cpu.shiftRight(cpu.getRegValue(dest), count)
-        // cpu.setRegValue(dest, result)
+    // Author: MANESH MATHIALAGEN
+    ShrInstruction(int d, int c) { 
+        dest = d;
+        count = c; 
     }
 
-    // Author: Student D
-    string toString() override { /* TODO: return "SHR Rx, count" */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    // DESC: Shift register bits right, fill with 0, store result back
+    void execute(CPU& cpu) override {
+        int result = cpu.shiftRight(cpu.getRegValue(dest), count);
+        cpu.setRegValue(dest, result);
+    }
+
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "SHR R" + to_string(dest) + ", " + to_string(count); 
+    }
 };
 
 
 // ============================================================
 // CLASS : PushInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles PUSH Rx
 //         Copies register value onto the top of the stack
 //         Stack Index (SI) increases by 1
 // ============================================================
 class PushInstruction : public Instruction {
 private:
-    // TODO Student D: int src
+    int src;
 
 public:
-    // Author: Student D
-    PushInstruction(int s) { /* TODO: src = s */ }
-
-    // Author: Student D
-    // DESC: Push register value onto VM stack
-    void execute(CPU& cpu) override {
-        // TODO Student D: cpu.stackPush(cpu.getRegValue(src))
+    // Author: MANESH MATHIALAGEN
+    PushInstruction(int s) { 
+        src = s; 
     }
 
-    // Author: Student D
-    string toString() override { /* TODO: return "PUSH Rx" */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    // DESC: Push register value onto VM stack
+    void execute(CPU& cpu) override {
+        cpu.stackPush(cpu.getRegValue(src));
+    }
+
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "PUSH R" + to_string(src); 
+    }
 };
 
 
 // ============================================================
 // CLASS : PopInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles POP Rx
 //         Removes top value from stack and stores in register
 //         Stack Index (SI) decreases by 1
@@ -1099,46 +1158,54 @@ public:
 // ============================================================
 class PopInstruction : public Instruction {
 private:
-    // TODO Student D: int dest
+    int dest;
 
 public:
-    // Author: Student D
-    PopInstruction(int d) { /* TODO: dest = d */ }
+    // Author: MANESH MATHIALAGEN
+    PopInstruction(int d) { 
+        dest = d; 
+    }
 
-    // Author: Student D
+    // Author: MANESH MATHIALAGEN
     // DESC: Pop value from VM stack into register
     //       MyStack.pop() already handles empty stack error
     void execute(CPU& cpu) override {
-        // TODO Student D: cpu.setRegValue(dest, cpu.stackPop())
+        cpu.setRegValue(dest, cpu.stackPop());
     }
 
-    // Author: Student D
-    string toString() override { /* TODO: return "POP Rx" */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "POP R" + to_string(dest); 
+    }
 };
 
 
 // ============================================================
 // CLASS : ResetInstruction
-// AUTHOR: Student D - [Full Name]
+// AUTHOR: MANESH MATHIALAGEN
 // DESC  : Handles RESET OF / RESET UF / RESET CF / RESET ZF
 //         Resets one specific flag back to 0
 // ============================================================
 class ResetInstruction : public Instruction {
 private:
-    // TODO Student D: string flagName
+    string flagName;
 
 public:
-    // Author: Student D
-    ResetInstruction(string name) { /* TODO: flagName = name */ }
-
-    // Author: Student D
-    // DESC: Reset the named flag to 0
-    void execute(CPU& cpu) override {
-        // TODO Student D: cpu.resetFlag(flagName)
+    // Author: MANESH MATHIALAGEN
+    ResetInstruction(string name) { 
+        flagName = name; 
     }
 
-    // Author: Student D
-    string toString() override { /* TODO: return "RESET flagName" */ return ""; }
+    // Author: MANESH MATHIALAGEN
+    // DESC: Reset the named flag to 0
+    void execute(CPU& cpu) override {
+        cpu.resetFlag(flagName);
+    }
+
+    // Author: MANESH MATHIALAGEN
+    string toString() override { 
+        return "RESET " + flagName; 
+    }
 };
 
 
