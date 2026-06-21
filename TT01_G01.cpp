@@ -1075,12 +1075,12 @@ public:
 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // SECTION 7 : ADVANCED INSTRUCTIONS
-// ASSIGNED TO : MANESH MATHIALAGEN
+// ASSIGNED TO : Student D
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 // ============================================================
 // CLASS : MulInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles MUL Rd, Rs  and  MUL Rd, number
 //         Multiplies destination by source
 // ============================================================
@@ -1092,7 +1092,7 @@ private:
     bool isImmediate;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     MulInstruction(int d, int s, bool imm) {
         dest = d;
         isImmediate = imm;
@@ -1103,7 +1103,7 @@ public:
         }
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: result = dest * src (or immediate), store back to dest
     void execute(CPU& cpu) override {
         int val1 = cpu.getRegValue(dest);
@@ -1111,7 +1111,7 @@ public:
         cpu.setRegValue(dest, val1 * val2);
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "MUL R" + to_string(dest) + ", " + (isImmediate ? to_string(immediate) : "R" + to_string(src)); 
     }
@@ -1120,7 +1120,7 @@ public:
 
 // ============================================================
 // CLASS : DivInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles DIV Rd, Rs  and  DIV Rd, number
 //         Divides destination by source
 //         IMPORTANT: must print error and exit if dividing by 0
@@ -1133,7 +1133,7 @@ private:
     bool isImmediate;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     DivInstruction(int d, int s, bool imm) {
         dest = d;
         isImmediate = imm;
@@ -1144,7 +1144,7 @@ public:
         }
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: result = dest / src (or immediate), store back to dest
     //       MUST check for divide by zero before dividing
     void execute(CPU& cpu) override {
@@ -1158,7 +1158,7 @@ public:
         cpu.setRegValue(dest, cpu.getRegValue(dest) / divisor);
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "DIV R" + to_string(dest) + ", " + (isImmediate ? to_string(immediate) : "R" + to_string(src)); 
     }
@@ -1167,7 +1167,7 @@ public:
 
 // ============================================================
 // CLASS : IncInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles INC Rx
 //         Adds 1 to the register value
 // ============================================================
@@ -1176,18 +1176,18 @@ private:
     int dest;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     IncInstruction(int d) { 
         dest = d; 
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: dest = dest + 1
     void execute(CPU& cpu) override {
         cpu.setRegValue(dest, cpu.getRegValue(dest) + 1);
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "INC R" + to_string(dest); 
     }
@@ -1196,7 +1196,7 @@ public:
 
 // ============================================================
 // CLASS : DecInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles DEC Rx
 //         Subtracts 1 from the register value
 // ============================================================
@@ -1205,18 +1205,18 @@ private:
     int dest;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     DecInstruction(int d) { 
         dest = d; 
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: dest = dest - 1
     void execute(CPU& cpu) override {
         cpu.setRegValue(dest, cpu.getRegValue(dest) - 1);
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "DEC R" + to_string(dest); 
     }
@@ -1225,7 +1225,7 @@ public:
 
 // ============================================================
 // CLASS : RolInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles ROL Rx, count
 //         Rotates bits in register left by count positions
 //         Leftmost bit wraps around to the rightmost position
@@ -1236,20 +1236,20 @@ private:
     int count;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     RolInstruction(int d, int c) { 
         dest = d;
         count = c; 
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: Rotate register bits left, store result back
     void execute(CPU& cpu) override {
         int result = cpu.rotateLeft(cpu.getRegValue(dest), count);
         cpu.setRegValue(dest, result);
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "ROL R" + to_string(dest) + ", " + to_string(count); 
     }
@@ -1258,7 +1258,7 @@ public:
 
 // ============================================================
 // CLASS : RorInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles ROR Rx, count
 //         Rotates bits in register right by count positions
 //         Rightmost bit wraps around to the leftmost position
@@ -1269,20 +1269,20 @@ private:
     int count;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Studnet D
     RorInstruction(int d, int c) { 
         dest = d;
         count = c; 
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: Rotate register bits right, store result back
     void execute(CPU& cpu) override {
         int result = cpu.rotateRight(cpu.getRegValue(dest), count);
         cpu.setRegValue(dest, result);
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "ROR R" + to_string(dest) + ", " + to_string(count); 
     }
@@ -1291,7 +1291,7 @@ public:
 
 // ============================================================
 // CLASS : ShlInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles SHL Rx, count
 //         Shifts bits left by count positions
 //         Empty spots on the right are filled with 0
@@ -1302,20 +1302,20 @@ private:
     int count;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     ShlInstruction(int d, int c) { 
         dest = d;
         count = c; 
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: Shift register bits left, fill with 0, store result back
     void execute(CPU& cpu) override {
         int result = cpu.shiftLeft(cpu.getRegValue(dest), count);
         cpu.setRegValue(dest, result);
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "SHL R" + to_string(dest) + ", " + to_string(count); 
     }
@@ -1324,7 +1324,7 @@ public:
 
 // ============================================================
 // CLASS : ShrInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles SHR Rx, count
 //         Shifts bits right by count positions
 //         Empty spots on the left are filled with 0
@@ -1335,20 +1335,20 @@ private:
     int count;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     ShrInstruction(int d, int c) { 
         dest = d;
         count = c; 
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: Shift register bits right, fill with 0, store result back
     void execute(CPU& cpu) override {
         int result = cpu.shiftRight(cpu.getRegValue(dest), count);
         cpu.setRegValue(dest, result);
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "SHR R" + to_string(dest) + ", " + to_string(count); 
     }
@@ -1357,7 +1357,7 @@ public:
 
 // ============================================================
 // CLASS : PushInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles PUSH Rx
 //         Copies register value onto the top of the stack
 //         Stack Index (SI) increases by 1
@@ -1367,18 +1367,18 @@ private:
     int src;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     PushInstruction(int s) { 
         src = s; 
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: Push register value onto VM stack
     void execute(CPU& cpu) override {
         cpu.stackPush(cpu.getRegValue(src));
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "PUSH R" + to_string(src); 
     }
@@ -1387,7 +1387,7 @@ public:
 
 // ============================================================
 // CLASS : PopInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles POP Rx
 //         Removes top value from stack and stores in register
 //         Stack Index (SI) decreases by 1
@@ -1398,19 +1398,19 @@ private:
     int dest;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     PopInstruction(int d) { 
         dest = d; 
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: Pop value from VM stack into register
     //       MyStack.pop() already handles empty stack error
     void execute(CPU& cpu) override {
         cpu.setRegValue(dest, cpu.stackPop());
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "POP R" + to_string(dest); 
     }
@@ -1419,7 +1419,7 @@ public:
 
 // ============================================================
 // CLASS : ResetInstruction
-// AUTHOR: MANESH MATHIALAGEN
+// AUTHOR: Student D - [MANESH MATHIALAGEN]
 // DESC  : Handles RESET OF / RESET UF / RESET CF / RESET ZF
 //         Resets one specific flag back to 0
 // ============================================================
@@ -1428,18 +1428,18 @@ private:
     string flagName;
 
 public:
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     ResetInstruction(string name) { 
         flagName = name; 
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     // DESC: Reset the named flag to 0
     void execute(CPU& cpu) override {
         cpu.resetFlag(flagName);
     }
 
-    // Author: MANESH MATHIALAGEN
+    // Author: Student D
     string toString() override { 
         return "RESET " + flagName; 
     }
