@@ -731,7 +731,11 @@ public:
     fullOutput += "#Begin#\n";
     fullOutput += regLine + "\n";
     fullOutput += flagLine + "\n";
-    fullOutput += "#PC#" + intToString(PC) + "#\n";
+    char pcBuf[8];
+    sprintf(pcBuf, "%04d", PC);
+    fullOutput += "#PC#" + string(pcBuf) + "#\n";
+    fullOutput += "#PC#" + string(pcBuf) + "#\n";
+    fullOutput += "#Memory#\n";
     fullOutput += memLine;
     fullOutput += "#End#\n";
 
@@ -1451,7 +1455,7 @@ public:
 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // SECTION 8 : STRING HELPER FUNCTIONS
-// ASSIGNED TO : Student A
+// ASSIGNED TO : Student A [soon chee]
 // These are standalone functions used by the Runner to
 // clean up and split text lines from the .asm file
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -1555,7 +1559,7 @@ void splitTwo(string s, char delim, string& left, string& right) {
 
 // ============================================================
 // CLASS : Runner
-// AUTHOR: Student A - [Full Name]
+// AUTHOR: Student A - [soon chee]
 // DESC  : Reads the .asm file, parses each line into an
 //         Instruction object, and executes them on the CPU.
 //         This is the main controller of the whole system.
@@ -1573,11 +1577,6 @@ private:
 public:
     Runner() : cpu(registers, &flags, &vmStack) {}
 
-    // ----------------------------------------------------------
-    // PARSE HELPER FUNCTIONS
-    // Each function handles one group of instructions
-    // Kept separate so no function exceeds 35 lines
-    // ----------------------------------------------------------
 
     // Author: Student A
     // DESC: Parse MOV instruction (all 3 modes)
@@ -1590,11 +1589,6 @@ public:
         if (isIndReg(right))
             return new MovInstruction(dest, getRegNum(removeBrackets(right)), true);
         return new MovInstruction(dest, atoi(right.c_str())); 
-        // TODO Student A:
-        // split rest by comma into left and right
-        // if right is a register:        return new MovInstruction(dest, src, false)
-        // if right is [register]:        return new MovInstruction(dest, src, true)
-        // if right is a number:          return new MovInstruction(dest, number)
 
     }
 
@@ -1610,12 +1604,7 @@ public:
         if (opcode == "SUB") return new SubInstruction(dest, val, isImm);
         if (opcode == "MUL") return new MulInstruction(dest, val, isImm);
         if (opcode == "DIV") return new DivInstruction(dest, val, isImm);
-        // TODO Student A:
-        // split rest by comma
-        // get dest register
-        // if right is register: create RegisterInstruction version
-        // if right is number:   create ImmediateInstruction version
-        // use opcode to decide which instruction class to create
+
         return nullptr;
     }
 
@@ -1630,10 +1619,7 @@ public:
         if (opcode == "ROR") return new RorInstruction(dest, count);
         if (opcode == "SHL") return new ShlInstruction(dest, count);
         if (opcode == "SHR") return new ShrInstruction(dest, count);
-        // TODO Student A:
-        // split rest by comma
-        // left = register, right = count number
-        // use opcode to decide which instruction class to create
+
         return nullptr;
     }
 
@@ -1668,12 +1654,6 @@ public:
         int srcReg = getRegNum(right);
         return new StoreInstruction(srcReg, addr, false);
     
-        // TODO Student A:
-        // LOAD: split by comma, left=dest register, right=[addr] or [Rx]
-        // STORE: split by comma, handle 3 formats:
-        //        STORE [R2], R1  (indirect)
-        //        STORE R1, 43   (register to fixed address)
-        //        STORE 20, R3   (fixed address, register)
     }
 
 
@@ -1688,9 +1668,7 @@ public:
         if (opcode == "INPUT")   return new InputInstruction(getRegNum(rest));
         if (opcode == "DISPLAY") return new DisplayInstruction(getRegNum(rest));
         if (opcode == "RESET")   return new ResetInstruction(rest);
-        // TODO Student A:
-        // These all take one operand only
-        // use opcode to decide which instruction class to create
+
         return nullptr;
     }
 
@@ -1730,18 +1708,6 @@ public:
             exit(1);
         }
         return instr;
-            // TODO Student A:
-        // 1. trim and removeComment from line
-        // 2. if empty, return nullptr
-        // 3. split into opcode and rest
-        // 4. toUpper the opcode
-        // 5. based on opcode, call correct parse helper:
-        //    MOV                    → parseMov(rest)
-        //    ADD/SUB/MUL/DIV        → parseArith(opcode, rest)
-        //    ROL/ROR/SHL/SHR        → parseShift(opcode, rest)
-        //    LOAD/STORE             → parseMemory(opcode, rest)
-        //    everything else        → parseSimple(opcode, rest)
-        // 6. if opcode unknown, print error and exit
 
     }
 
@@ -1795,30 +1761,14 @@ public:
 
         // 10. write output file
         cpu.writeOutput(outputFile);
-        // TODO Student A:
-        // 1. set outputFile name
-        // 2. open file with ifstream
-        // 3. read line by line into instructions MyVector
-        //    and also enqueue into programQueue
-        // 4. close file
-        // 5. print how many instructions were loaded
-        // 6. cpu.reset()
-        // 7. print START message, cpu.displayState()
-        // 8. loop through instructions:
-        //    a. parseLine to get Instruction*
-        //    b. instr->execute(cpu)
-        //    c. cpu.incrementPC()
-        //    d. cpu.displayState()
-        //    e. delete instr
-        // 9. print END message
-        // 10. cpu.writeOutput(outputFile)
+    
     }
 };
 
 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // SECTION 10 : MAIN FUNCTION
-// ASSIGNED TO : Student A
+// ASSIGNED TO : Student A (soon chee)
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 // Author: Student A
