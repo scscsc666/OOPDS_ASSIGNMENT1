@@ -2,9 +2,9 @@
 // CCP6124 Object-Oriented Programming and Data Structures
 // Trimester 2610
 // Virtual Machine and Assembly Language Interpreter
-// File: TT01_G01.cpp
-// Group: TT01_G01
-// Due: 4 July 2026
+// File: OOPDS_ASIGNMENT1.cpp
+// Group: 6
+
 // ============================================================
 // GROUP MEMBERS:
 //   Student A - [YAP SOON CHEE] - [253UC256GH]
@@ -443,17 +443,20 @@ string intToString(int n) {
 // ============================================================
 class CPU {
 private:
-    GeneralRegister registers[8];   // R0 to R7
-    FlagRegister flags;             // OF, UF, CF, ZF
-    Memory memory;                  // 64 bytes of storage
-    MyStack<int> vmStack;           // 8-slot system stack
-    int PC;                         // Program Counter
-    int SI;                         // Stack Index
+    Memory memory;                  // COMPOSITION - CPU owns Memory
+    GeneralRegister* registers;     // AGGREGATION - passed from outside
+    FlagRegister* flags;            // AGGREGATION - passed from outside
+    MyStack<int>* vmStack;          // AGGREGATION - passed from outside
+    int PC;
+    int SI;
 
 public:
     // Author: Student C
     // Start PC and SI at 0
-    CPU() {
+    CPU(GeneralRegister* r, FlagRegister* f, MyStack<int>* s) {
+        registers = r;
+        flags = f;
+        vmStack = s;
         PC = 0;
         SI = 0;
     }
@@ -469,13 +472,13 @@ public:
 
     //Save value and update flags
     void setRegValue(int n, int v) {
-        flags.updateFlags(v);
+        flags->updateFlags(v);
         registers[n].setValue(v);
     }
 
     // Clear one flag
     void resetFlag(string name) {
-        flags.resetOne(name);
+        flags->resetOne(name);
     }
 
     // Read from memory
@@ -500,14 +503,14 @@ public:
 
     //Push value onto stack
     void stackPush(int value) {
-        vmStack.push(value);
+        vmStack->push(value);
         SI++;
     }
 
     //Pop value from stack
     int stackPop() {
         SI--;
-        return vmStack.pop();
+        return vmStack->pop();
     }
     //Get stack index
     int getSI() {
@@ -520,7 +523,7 @@ public:
             registers[i].reset();
         }
 
-        flags.resetAll();
+        flags->resetAll();
 
         memory.reset();
 
@@ -645,10 +648,10 @@ public:
 
         cout << "Flags:" << endl;
 
-        cout << "OF = " << flags.getOF() << endl;
-        cout << "UF = " << flags.getUF() << endl;
-        cout << "CF = " << flags.getCF() << endl;
-        cout << "ZF = " << flags.getZF() << endl;
+        cout << "OF = " << flags->getOF() << endl;
+        cout << "UF = " << flags->getUF() << endl;
+        cout << "CF = " << flags->getCF() << endl;
+        cout << "ZF = " << flags->getZF() << endl;
     }
 
     // Author: Student C
@@ -674,16 +677,16 @@ public:
         string result = "#Flags#";
         char buf[5];
 
-        sprintf(buf, "%d", flags.getOF());
+        sprintf(buf, "%d", flags->getOF());
         result += "OF#" + string(buf) + "#";
 
-        sprintf(buf, "%d", flags.getUF());
+        sprintf(buf, "%d", flags->getUF());
         result += "UF#" + string(buf) + "#";
 
-        sprintf(buf, "%d", flags.getCF());
+        sprintf(buf, "%d", flags->getCF());
         result += "CF#" + string(buf) + "#";
 
-        sprintf(buf, "%d", flags.getZF());
+        sprintf(buf, "%d", flags->getZF());
         result += "ZF#" + string(buf) + "#";
 
         return result;
@@ -1559,10 +1562,16 @@ void splitTwo(string s, char delim, string& left, string& right) {
 // ============================================================
 class Runner {
 private:
-    CPU      cpu;
-    MyVector<string> instructions;    // stores raw text lines
-    MyQueue<string>  programQueue;    // queue version of the program
-    string   outputFile;
+    GeneralRegister  registers[8];  // created here, outside CPU
+    FlagRegister     flags;         // created here, outside CPU
+    MyStack<int>     vmStack;       // created here, outside CPU
+    CPU              cpu;
+    MyVector<string> instructions;
+    MyQueue<string>  programQueue;
+    string           outputFile;
+
+public:
+    Runner() : cpu(registers, &flags, &vmStack) {}
 
     // ----------------------------------------------------------
     // PARSE HELPER FUNCTIONS
@@ -1658,13 +1667,14 @@ private:
         int addr   = atoi(left.c_str());
         int srcReg = getRegNum(right);
         return new StoreInstruction(srcReg, addr, false);
-    }
+    
         // TODO Student A:
         // LOAD: split by comma, left=dest register, right=[addr] or [Rx]
         // STORE: split by comma, handle 3 formats:
         //        STORE [R2], R1  (indirect)
         //        STORE R1, 43   (register to fixed address)
         //        STORE 20, R3   (fixed address, register)
+    }
 
 
     // Author: Student A
