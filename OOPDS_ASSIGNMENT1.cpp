@@ -13,7 +13,7 @@
 //   Student D - [MANESH MATHIALAGEN] - [253UC256FC]
 // ============================================================
 // HOW TO COMPILE:
-//   g++ OOPDS_ASIGNMENT1.cpp -o vm
+//   g++ OOPDS_ASSIGNMENT1.cpp -o vm
 // HOW TO RUN:
 //   ./vm program.asm        (Linux / Mac)
 //   vm.exe program.asm      (Windows)
