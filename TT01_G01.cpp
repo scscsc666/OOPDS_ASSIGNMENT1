@@ -1788,7 +1788,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     Runner runner;
-    runner.run(argv[1])
+    runner.run(argv[1]);
 
     // if argc < 2: print usage instructions and return 1
     // else: create Runner, call runner.run(argv[1])
