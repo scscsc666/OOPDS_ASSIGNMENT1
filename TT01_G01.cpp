@@ -13,7 +13,7 @@
 //   Student D - [MANESH MATHIALAGEN] - [253UC256FC]
 // ============================================================
 // HOW TO COMPILE:
-//   g++ TT01_G01.cpp -o vm
+//   g++ OOPDS_ASIGNMENT1.cpp -o vm
 // HOW TO RUN:
 //   ./vm program.asm        (Linux / Mac)
 //   vm.exe program.asm      (Windows)
@@ -663,8 +663,10 @@ public:
         int v = registers[i].getValue();
 
         char buffer[12];
-        sprintf(buffer, "%04d", v);
-
+        if (v < 0)
+            sprintf(buffer, "%d", v);      // e.g. "-5" as-is
+        else
+            sprintf(buffer, "%04d", v);    // e.g. "0005"
         result += string(buffer) + "#";
     }
 
@@ -733,7 +735,6 @@ public:
     fullOutput += flagLine + "\n";
     char pcBuf[8];
     sprintf(pcBuf, "%04d", PC);
-    fullOutput += "#PC#" + string(pcBuf) + "#\n";
     fullOutput += "#PC#" + string(pcBuf) + "#\n";
     fullOutput += "#Memory#\n";
     fullOutput += memLine;
@@ -929,9 +930,13 @@ public:
     // Author: Student C
     AddInstruction(int d, int s, bool imm) {
         dest = d;
-        src = s;
-        immediate = s;
         isImmediate = imm;
+        if (imm) { 
+            immediate = s; src = 0; 
+        }
+        else { 
+            src = s; immediate = 0; 
+        }
     }
 
     // Author: Student C
@@ -972,10 +977,14 @@ private:
 public:
     // Author: Student C
     SubInstruction(int d, int s, bool imm) {
-        dest = d;
-        src = s;
-        immediate = s;
-        isImmediate = imm;
+    dest = d;
+    isImmediate = imm;
+    if (imm) { 
+        immediate = s; src = 0; 
+    }
+    else { 
+        src = s; immediate = 0; 
+    }
     }
 
     // Author: Student C
@@ -1059,9 +1068,13 @@ public:
     // useReg=false means STORE Rs, 43
     StoreInstruction(int src, int addr, bool useR) {
         srcReg = src;
-        address = addr;
-        addrReg = addr;
         useReg = useR;
+        if (useR) {
+            addrReg = addr; address = 0; 
+        }
+        else {
+            address = addr; addrReg = 0; 
+        }
     }
 
     // Author: Student C
@@ -1711,57 +1724,50 @@ public:
 
     }
 
-public:
+private:
     // Author: Student A
-    // DESC: Main method - load the file, execute all instructions,
-    //       display results, write output file
-    void run(string filename) {
-        outputFile = filename + ".out";
-
-        // 2. open file
+    // DESC: Load .asm file lines into instructions vector and programQueue
+    void loadFile(string filename) {
         ifstream file(filename);
         if (!file.is_open()) {
             cout << "ERROR: Cannot open file: " << filename << endl;
             exit(1);
         }
-
-        // 3. read lines into instructions vector and programQueue
         string line;
         while (getline(file, line)) {
             instructions.push_back(line);
             programQueue.enqueue(line);
         }
-
-        // 4. close file
         file.close();
-
-        // 5. print how many lines loaded
         cout << "Loaded " << instructions.getSize()
              << " lines from " << filename << endl;
+    }
 
-        // 6. reset CPU
+    // Author: Student A
+    // DESC: Execute all loaded instructions on the CPU
+    void executeAll() {
         cpu.reset();
-
-        // 7. print START and initial state
         cout << "=== START ===" << endl;
         cpu.displayState();
-
-        // 8. loop through instructions
         for (int i = 0; i < instructions.getSize(); i++) {
             Instruction* instr = parseLine(instructions.get(i), i + 1);
-            if (instr == nullptr) continue;   // blank/comment line
+            if (instr == nullptr) continue;
             instr->execute(cpu);
             cpu.incrementPC();
             cpu.displayState();
             delete instr;
         }
-
-        // 9. print END
         cout << "=== END ===" << endl;
+    }
 
-        // 10. write output file
+public:
+    // Author: Student A
+    // DESC: Main entry - load file, execute, write output
+    void run(string filename) {
+        outputFile = filename + ".out";
+        loadFile(filename);
+        executeAll();
         cpu.writeOutput(outputFile);
-    
     }
 };
 
@@ -1782,8 +1788,8 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     Runner runner;
-    runner.run(argv[1]);
-    // TODO Student A:
+    runner.run(argv[1])
+
     // if argc < 2: print usage instructions and return 1
     // else: create Runner, call runner.run(argv[1])
     return 0;
