@@ -1,0 +1,12 @@
+; Program 1: Sum of 5 values (10+20+30+40+50 = 150, but clamped to 127)
+MOV R0, 10
+MOV R1, 20
+MOV R2, 30
+MOV R3, 40
+MOV R4, 50
+ADD R0, R1
+ADD R0, R2
+ADD R0, R3
+ADD R0, R4
+STORE R0, 0
+DISPLAY R0

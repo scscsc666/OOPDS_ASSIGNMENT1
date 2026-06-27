@@ -25,6 +25,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cctype>
+#include <cstdint>
 
 using namespace std;
 
@@ -207,7 +208,7 @@ public:
 // ============================================================
 class Register {
 protected:
-    int value; 
+    int8_t value;
 
 public:
     // Constructor - set value to 0
@@ -217,7 +218,7 @@ public:
 
     // Returns the current value stored in this register
     int getValue() {
-        return value;
+        return (int)value;
     }
 
     // Resets register value back to 0
@@ -227,7 +228,7 @@ public:
 
     // Sets the value 
     virtual void setValue(int v) {
-        value = v;
+        value = (int8_t)v;
     }
 };
 
@@ -378,7 +379,7 @@ public:
 // ============================================================
 class Memory {
 private:
-    int mem[64];   // 64 memory slots, each holds one number
+    int8_t mem[64];   // 64 memory slots, each holds one number
 
 public:
     // Constructor - fill all 64 slots with 0
@@ -395,7 +396,7 @@ public:
                  << " is out of range. Must be 0 to 63." << endl;
             exit(1);
         }
-        return mem[address];
+        return (int)mem[address];
     }
 
     // Write a value to a given memory address and print error and exit if address is not 0 to 63
@@ -405,11 +406,11 @@ public:
                  << " is out of range. Must be 0 to 63." << endl;
             exit(1);
         }
-        mem[address] = value;
+        mem[address] = (int8_t)value;
     }
 
     // Returns the raw memory array 
-    int* getRaw() {
+    int8_t* getRaw() {
         return mem;
     }
 
@@ -447,8 +448,8 @@ private:
     GeneralRegister* registers;     // AGGREGATION - passed from outside
     FlagRegister* flags;            // AGGREGATION - passed from outside
     MyStack<int>* vmStack;          // AGGREGATION - passed from outside
-    int PC;
-    int SI;
+    int8_t PC;
+    int8_t SI;
 
 public:
     // Author: Student C
@@ -493,7 +494,7 @@ public:
 
     //Get program counter
     int getPC() {
-        return PC;
+        return (int)PC;
     }
 
     //Go to next instrution
@@ -514,7 +515,7 @@ public:
     }
     //Get stack index
     int getSI() {
-        return SI;
+        return (int)SI;
     }
 
     // Reset everything
@@ -698,7 +699,7 @@ public:
     // memory output lines
     string buildMemoryLines() {
     string result;
-    int* mem = memory.getRaw();
+    int8_t* mem = memory.getRaw();
 
     for (int row = 0; row < 8; row++) {
         result += "#";
@@ -1657,17 +1658,22 @@ public:
             return new StoreInstruction(srcReg, addrReg, true);
         }
         if (isReg(left)) {
-            // STORE Rx, 43
             int srcReg = getRegNum(left);
-            int addr   = atoi(right.c_str());
+            // NEW: STORE Rx, [Ry]
+            if (isIndReg(right)) {
+                int addrReg = getRegNum(removeBrackets(right));
+                return new StoreInstruction(srcReg, addrReg, true);
+            }
+            // STORE Rx, 43
+            int addr = atoi(right.c_str());
             return new StoreInstruction(srcReg, addr, false);
         }
         // STORE 20, Rs
         int addr   = atoi(left.c_str());
         int srcReg = getRegNum(right);
         return new StoreInstruction(srcReg, addr, false);
-    
     }
+        
 
 
     // Author: Student A
