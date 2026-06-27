@@ -244,9 +244,7 @@ class GeneralRegister : public Register{
 public:   
     // Sets the value but clamps it to -128-127 range and overrides the parent Register's setValue
     void setValue(int v) override {
-        if (v > 127) v = 127;
-        if (v < -128) v = -128;
-        value = v;
+        value = static_cast<int8_t>(v);
     }
 };
 
