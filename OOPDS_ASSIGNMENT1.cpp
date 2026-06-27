@@ -1508,7 +1508,7 @@ string removeComment(string s) {
 // Author: Student A
 // DESC: Check if a string is a register name like R0, R1 .. R7
 bool isReg(string s) {
-    return s.size() == 2 && s[0] == 'R' && isdigit(s[1]);
+    return s.size() == 2 && s[0] == 'R' && s[1] >= '0' && s[1] <= '7';
     // TODO Student A: check s[0]=='R' and s[1] is a digit
 
 }
@@ -1516,7 +1516,7 @@ bool isReg(string s) {
 // Author: Student A
 // DESC: Check if a string is an indirect register like [R0]
 bool isIndReg(string s) {
-    return s.size() == 4 && s[0] == '[' && s[1] == 'R' && isdigit(s[2]) && s[3] == ']';
+    return s.size() == 4 && s[0] == '[' && s[1] == 'R' && s[2] >= '0' && s[2] <= '7' && s[3] == ']';
     // TODO Student A: check s starts with '[', ends with ']', middle is R+digit
 
 }
@@ -1558,13 +1558,13 @@ int getRegNum(string s) {
 // Example: "R0, R1" → left="R0", right="R1"
 void splitTwo(string s, char delim, string& left, string& right) {
     int pos = s.find(delim);
+    if (pos == (int)string::npos) {
+        cout << "ERROR: Missing comma in: " << s << endl;
+        exit(1);
+    }
     left  = trim(s.substr(0, pos));
-    right = trim(s.substr(pos + 1)); 
-    // TODO Student A: find delim position
-    //                 left  = everything before it (trimmed)
-    //                 right = everything after it (trimmed)
+    right = trim(s.substr(pos + 1));
 }
-
 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // SECTION 9 : RUNNER CLASS
@@ -1707,6 +1707,7 @@ public:
             rest   = trim(line.substr(spacePos + 1));
         }
         opcode = toUpper(opcode);
+        rest   = toUpper(rest); 
 
         if (opcode == "MOV")
             return parseMov(rest);
