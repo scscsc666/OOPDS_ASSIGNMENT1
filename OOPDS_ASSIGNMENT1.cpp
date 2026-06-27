@@ -645,7 +645,7 @@ public:
                 << endl;
         }
 
-        cout << "PC = " << PC << endl;
+        cout << "PC = " << (int)PC << endl;
 
         cout << "Flags:" << endl;
 
