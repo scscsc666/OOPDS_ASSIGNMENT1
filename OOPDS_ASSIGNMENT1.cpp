@@ -1652,7 +1652,7 @@ public:
         }
         // STORE
         if (isIndReg(left)) {
-            // STORE [Rx], Rs
+            // STORE Rx, [Ry]
             int addrReg = getRegNum(removeBrackets(left));
             int srcReg  = getRegNum(right);
             return new StoreInstruction(srcReg, addrReg, true);
@@ -1674,8 +1674,6 @@ public:
         return new StoreInstruction(srcReg, addr, false);
     }
         
-
-
     // Author: Student A
     // DESC: Parse PUSH, POP, RESET, INPUT, DISPLAY, INC, DEC instructions
     Instruction* parseSimple(string opcode, string rest) {
