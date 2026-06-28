@@ -1658,7 +1658,10 @@ public:
             int dest = getRegNum(left);
             if (isIndReg(right))
                 return new LoadInstruction(dest, getRegNum(removeBrackets(right)), true);
-            return new LoadInstruction(dest, atoi(removeBrackets(right).c_str()), false);
+            if (isIndNum(right))   
+                return new LoadInstruction(dest, atoi(removeBrackets(right).c_str()), false);
+        
+            return new LoadInstruction(dest, atoi(right.c_str()), false);
         }
         // STORE
         if (isIndReg(left)) {
