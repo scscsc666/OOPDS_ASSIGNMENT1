@@ -1501,7 +1501,7 @@ string trim(string s) {
 string toUpper(string s) {
     for (int i = 0; i < (int)s.size(); i++)
         s[i] = toupper(s[i]); 
-        // TODO Student A: loop through each character, call toupper()
+        
     return s;
 }
 
@@ -1512,7 +1512,7 @@ string removeComment(string s) {
     int pos = s.find(';');
     if (pos != (int)string::npos)
         return s.substr(0, pos); 
-        // TODO Student A: find ';', return everything before it
+        
     return s;
 }
 
@@ -1520,16 +1520,14 @@ string removeComment(string s) {
 // DESC: Check if a string is a register name like R0, R1 .. R7
 bool isReg(string s) {
     return s.size() == 2 && s[0] == 'R' && s[1] >= '0' && s[1] <= '7';
-    // TODO Student A: check s[0]=='R' and s[1] is a digit
-
+   
 }
 
 // Author: Student A
 // DESC: Check if a string is an indirect register like [R0]
 bool isIndReg(string s) {
     return s.size() == 4 && s[0] == '[' && s[1] == 'R' && s[2] >= '0' && s[2] <= '7' && s[3] == ']';
-    // TODO Student A: check s starts with '[', ends with ']', middle is R+digit
-
+    
 }
 
 // Author: Student A
@@ -1541,7 +1539,7 @@ bool isIndNum(string s) {
     for (int i = 0; i < (int)inner.size(); i++)
         if (!isdigit(inner[i])) return false;
     return inner.size() > 0; 
-    // TODO Student A: check s starts with '[', ends with ']', middle is digit
+   
 
 }
 
@@ -1550,7 +1548,7 @@ bool isIndNum(string s) {
 // Example: "[R2]" → "R2",   "[20]" → "20"
 string removeBrackets(string s) {
     return s.substr(1, s.size() - 2); 
-    // TODO Student A: return s without first and last character
+    
 
 }
 
