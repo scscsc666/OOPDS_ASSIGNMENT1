@@ -1492,7 +1492,7 @@ string trim(string s) {
     int start = 0;
     int end = (int)s.size() - 1;
     while (start <= end && (s[start] == ' ' || s[start] == '\t')) start++;
-    while (end >= start && (s[end] == ' ' || s[end] == '\t')) end--;
+    while (end >= start && (s[end] == ' ' || s[end] == '\t' || s[end] == '\r')) end--;
     return s.substr(start, end - start + 1);
 }
 
