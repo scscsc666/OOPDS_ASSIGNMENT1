@@ -242,10 +242,18 @@ public:
 // ============================================================
 class GeneralRegister : public Register{
 public:   
-    // Sets the value but clamps it to -128-127 range and overrides the parent Register's setValue
-    void setValue(int v) override {
-        value = static_cast<int8_t>(v);
+// Store value as a true signed 8-bit register.
+// Casting to int8_t automatically wraps values using two's complement.
+// Example:
+//   127  -> 127
+//   128  -> -128
+//   130  -> -126
+//   150  -> -106
+// This matches the behaviour of a one-byte register.
+void setValue(int v) override {
+    value = static_cast<int8_t>(v);
     }
+    
 };
 
 
@@ -706,7 +714,10 @@ public:
             int val = mem[row * 8 + col];
 
             char buffer[12];
-            sprintf(buffer, "%04d", val);
+            if (val < 0)
+                sprintf(buffer, "%d", val);
+            else
+                sprintf(buffer, "%04d", val);
 
             result += string(buffer) + "#";
         }
@@ -1117,7 +1128,8 @@ public:
         isImmediate = imm;
         if (isImmediate) {
             immediate = s;
-        } else {
+        } 
+        else {
             src = s;
         }
     }
@@ -1158,7 +1170,8 @@ public:
         isImmediate = imm;
         if (isImmediate) {
             immediate = s;
-        } else {
+        } 
+        else {
             src = s;
         }
     }
@@ -1645,22 +1658,26 @@ public:
             int dest = getRegNum(left);
             if (isIndReg(right))
                 return new LoadInstruction(dest, getRegNum(removeBrackets(right)), true);
-            // isIndNum
             return new LoadInstruction(dest, atoi(removeBrackets(right).c_str()), false);
         }
         // STORE
         if (isIndReg(left)) {
-            // STORE Rx, [Ry]
+            // STORE [Rx], Rs
             int addrReg = getRegNum(removeBrackets(left));
             int srcReg  = getRegNum(right);
             return new StoreInstruction(srcReg, addrReg, true);
         }
         if (isReg(left)) {
             int srcReg = getRegNum(left);
-            // NEW: STORE Rx, [Ry]
+            // STORE Rx, [Ry]
             if (isIndReg(right)) {
                 int addrReg = getRegNum(removeBrackets(right));
                 return new StoreInstruction(srcReg, addrReg, true);
+            }
+            // STORE Rx, [20]
+            if (right.size() > 2 && right[0] == '[' && right.back() == ']') {
+                int addr = atoi(removeBrackets(right).c_str());
+                return new StoreInstruction(srcReg, addr, false);
             }
             // STORE Rx, 43
             int addr = atoi(right.c_str());
