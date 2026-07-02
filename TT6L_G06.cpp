@@ -2,7 +2,7 @@
 // CCP6124 Object-Oriented Programming and Data Structures
 // Trimester 2610
 // Virtual Machine and Assembly Language Interpreter
-// File: OOPDS_ASIGNMENT1.cpp
+// File: TT6L_G06.cpp
 // Group: 6
 
 // ============================================================
@@ -13,7 +13,7 @@
 //   Student D - [MANESH MATHIALAGEN] - [253UC256FC]
 // ============================================================
 // HOW TO COMPILE:
-//   g++ OOPDS_ASSIGNMENT1.cpp -o vm
+//   g++ TT6L_G06.cpp -o vm
 // HOW TO RUN:
 //   ./vm program.asm        (Linux / Mac)
 //   vm.exe program.asm      (Windows)
@@ -1817,5 +1817,5 @@ int main(int argc, char* argv[]) {
 }
 
 // ============================================================
-// END OF OOPDS_ASSIGNMENT1.cpp
+// END OF TT6L_G06.cpp
 // ============================================================
